@@ -125,7 +125,7 @@ export default function SearchModal({ open, onClose }: Props) {
             value={q}
             onChange={e => { setQ(e.target.value); search(e.target.value); setActiveIdx(-1); }}
             onKeyDown={onKeyDown}
-            placeholder='Search for anime ex: "One Piece"'
+            placeholder='Search for anime ex: "Naruto"'
             className="flex-1 bg-transparent text-white text-base placeholder-slate-600 focus:outline-none"
             autoComplete="off"
             spellCheck={false}

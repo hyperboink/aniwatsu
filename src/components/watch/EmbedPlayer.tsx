@@ -248,7 +248,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
       </div>
 
       {/* Unified toolbar: servers left, controls right */}
-      <div className="flex items-center gap-2 mt-2 mb-1 flex-wrap">
+      <div className="flex items-center gap-2 mt-4 mb-1 flex-wrap">
         <span className={`text-xs flex items-center gap-1 ${lightMode ? "text-white/20" : "text-slate-500"}`}>
           <Server size={11} /> Server:
         </span>

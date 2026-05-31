@@ -80,16 +80,7 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
-      {/* Back breadcrumb */}
-      <Link
-        href={`/anime/${anime.mal_id}`}
-        className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors mb-2"
-      >
-        <ChevronLeft size={15} />
-        {title}
-      </Link>
-
+    <div className="max-w-7xl mx-auto px-4 py-4 mt-6">
       <div className="flex flex-col xl:flex-row gap-5">
         {/* ── Left: player + controls ── */}
         <div className="flex-1 min-w-0">
@@ -102,7 +93,15 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
           )}
 
           {/* Reload — top right above video */}
-          <div className="flex justify-end mb-1">
+          <div className="flex justify-between mb-4">
+            {/* Back breadcrumb */}
+            <Link
+              href={`/anime/${anime.mal_id}`}
+              className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors"
+            >
+              <ChevronLeft size={15} />
+              {title}
+            </Link>
             <button
               onClick={() => embedRef.current?.reload()}
               className="flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-[#1a1a2e] text-slate-500 border border-white/10 hover:text-white hover:border-white/30 transition-all"
