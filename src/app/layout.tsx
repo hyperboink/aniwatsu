@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   creator: "Aniwatsu",
   publisher: "Aniwatsu",
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
+  other: { "theme-color": "#0d0d14" },
   openGraph: {
     type: "website",
     siteName: "Aniwatsu",
@@ -37,10 +38,6 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${geist.variable}`}>
-      <head>
-        <link rel="preconnect" href="https://cdn.myanimelist.net" />
-        <meta name="theme-color" content="#0d0d14" />
-      </head>
       <body className="min-h-screen flex flex-col bg-[#0d0d14]">
         <Navbar />
         <div className="flex-1 pt-16">{children}</div>

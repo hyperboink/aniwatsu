@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Search, Menu, X, Tv, Flame, Star, Calendar, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import SearchModal from "@/components/layout/SearchModal";
 
 type Suggestion = {
   mal_id: number;
@@ -211,102 +212,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Search bar */}
-        {searchOpen && (
-          <div className="border-t border-white/5 bg-[#0d0d14]/98 backdrop-blur-md px-4 py-3 slide-down">
-            <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
-              <div className="relative" ref={sugRef}>
-                <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 z-10" />
-                <input
-                  ref={searchRef}
-                  type="text"
-                  value={searchQ}
-                  onChange={(e) => { setSearchQ(e.target.value); fetchSuggestions(e.target.value); setActiveIdx(-1); }}
-                  onFocus={() => { if (suggestions.length) setSugOpen(true); }}
-                  onBlur={() => setTimeout(() => setSugOpen(false), 150)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Search anime... (⌘K)"
-                  className="w-full pl-10 pr-20 py-3 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-violet-500/60 focus:bg-white/8 transition-all"
-                  autoComplete="off"
-                />
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                  {sugLoading
-                    ? <div className="w-3.5 h-3.5 border border-violet-500/50 border-t-violet-400 rounded-full animate-spin" />
-                    : searchQ && <kbd className="text-[10px] text-slate-600 bg-white/5 border border-white/10 rounded px-1.5 py-0.5">↵</kbd>
-                  }
-                </div>
-
-                {/* Suggestions dropdown */}
-                {sugOpen && suggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-[#13131f] border border-white/8 rounded-2xl shadow-2xl shadow-black/70 overflow-hidden z-50 slide-down">
-                    <div className="px-3 py-2 border-b border-white/5 flex items-center justify-between">
-                      <span className="text-[10px] uppercase tracking-widest text-slate-600 font-semibold">Suggestions</span>
-                      <span className="text-[10px] text-slate-700">↑↓ navigate · ↵ select · esc close</span>
-                    </div>
-                    {suggestions.map((s, i) => (
-                      <button
-                        key={s.mal_id}
-                        type="button"
-                        onMouseDown={() => handleSuggestionClick(s.mal_id)}
-                        onMouseEnter={() => setActiveIdx(i)}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 transition-colors group text-left ${
-                          activeIdx === i ? "bg-violet-500/15" : "hover:bg-white/5"
-                        }`}
-                      >
-                        {/* Thumbnail */}
-                        <div className="w-9 h-12 rounded-lg overflow-hidden shrink-0 bg-white/5 ring-1 ring-white/5">
-                          {s.images?.jpg?.image_url && (
-                            <Image src={s.images.jpg.image_url} alt={s.title} width={36} height={48} className="w-full h-full object-cover" />
-                          )}
-                        </div>
-
-                        {/* Title + meta */}
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-sm font-semibold truncate transition-colors ${activeIdx === i ? "text-violet-300" : "text-white group-hover:text-violet-300"}`}>
-                            {s.title_english || s.title}
-                          </p>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            {s.title_english && s.title !== s.title_english && (
-                              <span className="text-[11px] text-slate-500 truncate max-w-[140px]">{s.title}</span>
-                            )}
-                            {s.year && <span className="text-[11px] text-slate-600">{s.year}</span>}
-                            {s.status === "Currently Airing" && (
-                              <span className="text-[10px] text-green-400 font-medium">● Airing</span>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Badges */}
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {s.type && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-violet-500/15 text-violet-400 border border-violet-500/20 font-medium">
-                              {s.type}
-                            </span>
-                          )}
-                          {s.score && (
-                            <span className="text-[11px] text-yellow-400 font-semibold">★ {s.score.toFixed(1)}</span>
-                          )}
-                        </div>
-                      </button>
-                    ))}
-
-                    {/* Footer */}
-                    <div className="border-t border-white/5">
-                      <button
-                        type="submit"
-                        className="w-full flex items-center justify-between px-4 py-2.5 text-xs text-slate-500 hover:text-violet-400 hover:bg-white/5 transition-colors"
-                      >
-                        <span>See all results for <span className="text-white font-medium">&ldquo;{searchQ}&rdquo;</span></span>
-                        <span className="text-slate-600">↵</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </form>
-          </div>
-        )}
-
         {/* Mobile menu */}
         {mobileOpen && (
           <div className="md:hidden border-t border-white/5 bg-[#0d0d14]/98 px-4 py-3 slide-down">
@@ -328,6 +233,8 @@ export default function Navbar() {
       {browseOpen && (
         <div className="fixed inset-0 z-40" onClick={() => setBrowseOpen(false)} />
       )}
+
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }
