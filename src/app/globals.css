@@ -91,7 +91,7 @@ body::after {
   transition: background 0.4s ease;
 }
 body.light-mode::after {
-  background: rgba(0, 0, 0, 0.88);
+  background: rgba(0, 0, 0, 0.93);
 }
 body.light-mode .watch-player-area {
   z-index: 9999;
