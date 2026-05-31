@@ -4,8 +4,7 @@ import AnimeGrid from "@/components/anime/AnimeGrid";
 import SectionHeader from "@/components/anime/SectionHeader";
 import { getCurrentSeasonAnime, getTopAnime } from "@/lib/api";
 
-// Always render at request time so Jikan is never hit at build time
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 async function safeGetTopAnime(filter: string) {
   try { return await getTopAnime(filter); } catch { return { data: [] }; }
@@ -22,7 +21,8 @@ export default async function Home() {
     safeGetTopAnime("upcoming"),
   ]);
 
-  const heroItems = seasonData.data
+  const heroSource = seasonData.data.length > 0 ? seasonData.data : popularData.data;
+  const heroItems = heroSource
     .filter((a) => a.score && a.score >= 7 && a.images?.jpg?.large_image_url)
     .slice(0, 8);
 

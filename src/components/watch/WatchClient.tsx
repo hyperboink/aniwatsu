@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import EmbedPlayer, { type EmbedPlayerHandle } from "@/components/watch/EmbedPlayer";
 import type { Anime } from "@/lib/api";
 import Link from "next/link";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight, Search, Play, List, RefreshCw } from "lucide-react";
 import { usePersist } from "@/hooks/usePersist";
 
@@ -160,12 +161,15 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
           {/* Anime info strip */}
           <div className="bg-[#13131f] rounded-xl border border-white/5 p-4 flex gap-4 items-start">
             {anime.images?.jpg?.image_url && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={anime.images.jpg.image_url}
-                alt={title}
-                className="w-14 h-20 object-cover rounded-lg shrink-0 border border-white/10"
-              />
+              <div className="relative w-14 h-20 shrink-0 rounded-lg overflow-hidden border border-white/10">
+                <Image
+                  src={anime.images.jpg.image_url}
+                  alt={title}
+                  fill
+                  className="object-cover"
+                  sizes="56px"
+                />
+              </div>
             )}
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap gap-1.5 mb-2">

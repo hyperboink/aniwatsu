@@ -25,11 +25,30 @@ async function getAnimeKaiUrl(malId: number): Promise<string | null> {
   }
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   try {
     const { id } = await params;
+    const { ep } = await searchParams;
     const { data } = await getAnimeById(Number(id));
-    return { title: `Watch ${data.title_english || data.title}` };
+    const title = data.title_english || data.title;
+    const episode = ep ? ` – Episode ${ep}` : "";
+    const description = `Watch ${title}${episode} free online in HD on Aniwatsu. No sign-up required.`;
+    const image = data.images?.jpg?.large_image_url;
+    const url = `https://aniwatsu.com/watch/${id}`;
+    return {
+      title: `Watch ${title}${episode}`,
+      description,
+      alternates: { canonical: url },
+      robots: { index: false, follow: false },
+      openGraph: {
+        title: `Watch ${title}${episode} | Aniwatsu`,
+        description,
+        url,
+        siteName: "Aniwatsu",
+        images: image ? [{ url: image, alt: title }] : [],
+      },
+      twitter: { card: "summary_large_image", title: `Watch ${title}${episode}`, description, images: image ? [image] : [] },
+    };
   } catch {
     return { title: "Watch" };
   }
