@@ -49,7 +49,7 @@ export default function SearchModal({ open, onClose }: Props) {
   const doFetch = useCallback(async (query: string, pg: number, append: boolean) => {
     if (pg === 1) setLoading(true); else setLoadingMore(true);
     try {
-      const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=${PAGE_SIZE}&page=${pg}&sfw=false`);
+      const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=${PAGE_SIZE}&page=${pg}&sfw=true`);
       const data = await res.json();
       if (queryRef.current !== query) return;
       const items: Hit[] = data.data ?? [];
@@ -125,7 +125,7 @@ export default function SearchModal({ open, onClose }: Props) {
             value={q}
             onChange={e => { setQ(e.target.value); search(e.target.value); setActiveIdx(-1); }}
             onKeyDown={onKeyDown}
-            placeholder="Search for anime…"
+            placeholder='Search for anime ex: "One Piece"'
             className="flex-1 bg-transparent text-white text-base placeholder-slate-600 focus:outline-none"
             autoComplete="off"
             spellCheck={false}

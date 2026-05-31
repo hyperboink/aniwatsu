@@ -69,7 +69,7 @@ export default function Navbar() {
     debounceRef.current = setTimeout(async () => {
       setSugLoading(true);
       try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(q)}&limit=6&sfw=false`);
+        const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(q)}&limit=6&sfw=true`);
         const data = await res.json();
         setSuggestions(data.data ?? []);
         setSugOpen(true);
