@@ -16,6 +16,7 @@ export default function ShrinkingHero({ children }: { children: React.ReactNode 
       raf.current = requestAnimationFrame(() => {
         const newH = Math.max(full - window.scrollY * 0.35, full * 0.5);
         el.style.height = `${newH}px`;
+        el.style.setProperty("--shrink-offset", `${full - newH}px`);
       });
     };
 
