@@ -33,50 +33,54 @@ export default async function Home() {
         <HeroCarousel items={heroItems} />
       </ShrinkingHero>
 
-      <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
-        {seasonData.data.length > 0 && (
-          <section className="fade-in">
-            <SectionHeader
-              title="Currently Airing"
-              icon={<Clock size={18} />}
-              href="/browse?filter=airing"
-            />
-            <AnimeGrid anime={seasonData.data.slice(0, 12)} />
-          </section>
-        )}
+      <div className="w-full relative">
+        <div className="absolute top-0  w-full h-20 -mt-20 inset-0 bg-gradient-to-t from-[#0d0d14] from-25% via-[#0d0d14]/50 via-50% to-transparent" />
 
-        {popularData.data.length > 0 && (
-          <section className="fade-in">
-            <SectionHeader
-              title="Most Popular"
-              icon={<TrendingUp size={18} />}
-              href="/browse?filter=bypopularity"
-            />
-            <AnimeGrid anime={popularData.data.slice(0, 12)} />
-          </section>
-        )}
+        <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
+          {seasonData.data.length > 0 && (
+            <section className="fade-in">
+              <SectionHeader
+                title="Currently Airing"
+                icon={<Clock size={18} />}
+                href="/browse?filter=airing"
+              />
+              <AnimeGrid anime={seasonData.data.slice(0, 12)} />
+            </section>
+          )}
 
-        {topData.data.length > 0 && (
-          <section className="fade-in">
-            <SectionHeader
-              title="Top Rated All Time"
-              icon={<Star size={18} />}
-              href="/browse?filter=favorite"
-            />
-            <AnimeGrid anime={topData.data.slice(0, 12)} showRank />
-          </section>
-        )}
+          {popularData.data.length > 0 && (
+            <section className="fade-in">
+              <SectionHeader
+                title="Most Popular"
+                icon={<TrendingUp size={18} />}
+                href="/browse?filter=bypopularity"
+              />
+              <AnimeGrid anime={popularData.data.slice(0, 12)} />
+            </section>
+          )}
 
-        {upcomingData.data.length > 0 && (
-          <section className="fade-in">
-            <SectionHeader
-              title="Upcoming Anime"
-              icon={<Flame size={18} />}
-              href="/browse?filter=upcoming"
-            />
-            <AnimeGrid anime={upcomingData.data.slice(0, 12)} />
-          </section>
-        )}
+          {topData.data.length > 0 && (
+            <section className="fade-in">
+              <SectionHeader
+                title="Top Rated All Time"
+                icon={<Star size={18} />}
+                href="/browse?filter=favorite"
+              />
+              <AnimeGrid anime={topData.data.slice(0, 12)} showRank />
+            </section>
+          )}
+
+          {upcomingData.data.length > 0 && (
+            <section className="fade-in">
+              <SectionHeader
+                title="Upcoming Anime"
+                icon={<Flame size={18} />}
+                href="/browse?filter=upcoming"
+              />
+              <AnimeGrid anime={upcomingData.data.slice(0, 12)} />
+            </section>
+          )}
+        </div>
       </div>
     </main>
   );
