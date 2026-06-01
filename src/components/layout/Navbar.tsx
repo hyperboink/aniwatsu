@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { Search, Menu, X, Tv, Flame, Star, Calendar, ChevronDown } from "lucide-react";
+import { Search, Menu, X, Tv, Home, Zap, Star, Clock, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import SearchModal from "@/components/layout/SearchModal";
 
@@ -120,10 +120,10 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { href: "/", label: "Home", icon: <Tv size={15} /> },
-    { href: "/browse?filter=airing", label: "Trending", icon: <Flame size={15} /> },
+    { href: "/", label: "Home", icon: <Home size={15} /> },
+    { href: "/browse?filter=airing", label: "Trending", icon: <Zap size={15} /> },
     { href: "/browse?filter=bypopularity", label: "Popular", icon: <Star size={15} /> },
-    { href: "/browse?filter=upcoming", label: "Upcoming", icon: <Calendar size={15} /> },
+    { href: "/browse?filter=upcoming", label: "Upcoming", icon: <Clock size={15} /> },
   ];
 
   return (
@@ -178,7 +178,7 @@ export default function Navbar() {
                     { label: "By Genre", href: "/browse" },
                     { label: "This Season", href: "/browse?filter=season" },
                     { label: "Top Rated", href: "/browse?filter=favorite" },
-                    { label: "Movies", href: "/browse?type=movie" },
+                    { label: "Movies", href: "/browse?filter=movie" },
                   ].map((item) => (
                     <Link
                       key={item.href}

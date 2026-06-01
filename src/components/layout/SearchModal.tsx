@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, Clock, TrendingUp, Star, Flame } from "lucide-react";
+import { Search, X, Clock, TrendingUp, Trophy, Flame, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -100,10 +100,10 @@ export default function SearchModal({ open, onClose }: Props) {
   const empty = hasQuery && !loading && hits.length === 0;
 
   const categories = [
-    { icon: <Flame size={15} />, label: "Trending", href: "/browse?filter=airing", color: "text-orange-400" },
-    { icon: <TrendingUp size={15} />, label: "Popular", href: "/browse?filter=bypopularity", color: "text-blue-400" },
-    { icon: <Star size={15} />, label: "Top Rated", href: "/browse?filter=favorite", color: "text-yellow-400" },
-    { icon: <Clock size={15} />, label: "Upcoming", href: "/browse?filter=upcoming", color: "text-violet-400" },
+    { icon: <Flame size={15} />, label: "Trending", href: "/browse?filter=airing", color: "text-slate-500" },
+    { icon: <Star size={15} />, label: "Popular", href: "/browse?filter=bypopularity", color: "text-slate-500" },
+    { icon: <Trophy size={15} />, label: "Top Rated", href: "/browse?filter=favorite", color: "text-slate-500" },
+    { icon: <Clock size={15} />, label: "Upcoming", href: "/browse?filter=upcoming", color: "text-slate-500" },
   ];
 
   return (
@@ -204,7 +204,7 @@ export default function SearchModal({ open, onClose }: Props) {
                     {/* Score */}
                     {h.score && (
                       <div className="shrink-0 flex items-center gap-1">
-                        <Star size={11} className="text-yellow-400" fill="currentColor" />
+                        <Star size={11} className="text-yellow-400" />
                         <span className="text-sm font-semibold text-slate-300">{h.score.toFixed(1)}</span>
                       </div>
                     )}

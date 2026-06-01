@@ -23,7 +23,7 @@ type Server_ = { label: string; url: string };
 
 const storageKey = (malId: number, ep: number) => `watch_${malId}_ep${ep}`;
 
-const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ malId, episode, title, titleEn, posterUrl, lightMode, expanded, onLightToggle, onExpand }: Props, ref) {
+const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ malId, animeKaiBaseUrl, episode, title, titleEn, posterUrl, lightMode, expanded, onLightToggle, onExpand }: Props, ref) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [servers, setServers] = useState<Server_[]>([]);
   const [fetching, setFetching] = useState(false);
