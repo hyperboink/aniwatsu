@@ -138,12 +138,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-6">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center glow">
-              <Tv size={16} className="text-white" />
-            </div>
-            <span className="text-xl font-bold text-white tracking-tight">
-              Ani<span className="text-violet-400">watsu</span>
-            </span>
+            <span className="text-xl font-bold text-white tracking-tight">Aniwatsu</span>
           </Link>
 
           {/* Desktop links */}
@@ -154,8 +149,8 @@ export default function Navbar() {
                 href={l.href}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   pathname === l.href
-                    ? "text-violet-400 bg-violet-500/10"
-                    : "text-slate-300 hover:text-white hover:bg-white/5"
+                    ? ""
+                    : "text-slate-300 hover:text-white"
                 }`}
               >
                 {l.icon}

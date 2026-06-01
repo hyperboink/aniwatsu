@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Play, Info, Star, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
@@ -12,6 +12,24 @@ const HeroParticles = dynamic(() => import("@/components/anime/HeroParticles"), 
 export default function HeroCarousel({ items }: { items: Anime[] }) {
   const [idx, setIdx] = useState(0);
   const [fading, setFading] = useState(false);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef(0);
+
+  useEffect(() => {
+    const el = bgRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        el.style.transform = `translateY(${window.scrollY * 0.3}px)`;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   const go = useCallback(
     (next: number) => {
@@ -38,10 +56,13 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
   const img = anime.images?.jpg?.large_image_url;
 
   return (
+    <div className="relative">
     <div className="relative h-[70vh] min-h-[480px] max-h-[720px] overflow-hidden">
       {/* Background */}
       <div
+        ref={bgRef}
         className={`absolute inset-0 transition-opacity duration-300 ${fading ? "opacity-0" : "opacity-100"}`}
+        style={{ willChange: "transform" }}
       >
         {/* Ambient layer — blurred, saturated */}
         {img && (
@@ -183,6 +204,17 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
           />
         ))}
       </div>
+    </div>
+    {/* Blur fade strip — outside overflow-hidden to blend hero into next section */}
+    <div
+      className="absolute bottom-0 inset-x-0 pointer-events-none"
+      style={{
+        height: "120px",
+        background: "linear-gradient(to top, #0d0d14 0%, #0d0d14 30%, rgba(13,13,20,0.85) 60%, transparent 100%)",
+        filter: "blur(8px)",
+        transform: "translateY(40px)",
+      }}
+    />
     </div>
   );
 }
