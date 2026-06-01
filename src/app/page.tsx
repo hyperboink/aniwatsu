@@ -1,4 +1,5 @@
 import { Flame, Star, Clock, TrendingUp } from "lucide-react";
+import ShrinkingHero from "@/components/anime/ShrinkingHero";
 import HeroCarousel from "@/components/anime/HeroCarousel";
 import AnimeGrid from "@/components/anime/AnimeGrid";
 import SectionHeader from "@/components/anime/SectionHeader";
@@ -28,7 +29,9 @@ export default async function Home() {
 
   return (
     <main>
-      <HeroCarousel items={heroItems} />
+      <ShrinkingHero>
+        <HeroCarousel items={heroItems} />
+      </ShrinkingHero>
 
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-14">
         {seasonData.data.length > 0 && (
