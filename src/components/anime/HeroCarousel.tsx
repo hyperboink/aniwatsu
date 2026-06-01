@@ -5,6 +5,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Play, Info, Star, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import type { Anime } from "@/lib/api";
+import dynamic from "next/dynamic";
+
+const HeroParticles = dynamic(() => import("@/components/anime/HeroParticles"), { ssr: false });
 
 export default function HeroCarousel({ items }: { items: Anime[] }) {
   const [idx, setIdx] = useState(0);
@@ -78,6 +81,7 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
         {/* Overlays */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#0d0d14] from-25% via-[#0d0d14]/50 via-50% to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d14] via-[#0d0d14]/10 to-black/30" />
+        <HeroParticles />
       </div>
 
       {/* Content */}

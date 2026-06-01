@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import EmbedPlayer from "@/components/watch/EmbedPlayer";
+import EmbedPlayer, { type EmbedPlayerHandle } from "@/components/watch/EmbedPlayer";
 import type { Anime } from "@/lib/api";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Search, Play, List, SkipForward, Maximize2, Sun, PlayCircle, FastForward } from "lucide-react";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight, Search, Play, List, RefreshCw } from "lucide-react";
 import { usePersist } from "@/hooks/usePersist";
 
 type Props = {
@@ -24,13 +25,11 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
   const [epPage, setEpPage] = useState(0);
   const activeRef = useRef<HTMLButtonElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
+  const embedRef = useRef<EmbedPlayerHandle>(null);
   const router = useRouter();
   const pathname = usePathname();
   const title = anime.title_english || anime.title;
 
-  const [autoNext,   setAutoNext]   = usePersist("ctrl_autoNext",   true);
-  const [autoPlay,   setAutoPlay]   = usePersist("ctrl_autoPlay",   true);
-  const [autoSkip,   setAutoSkip]   = usePersist("ctrl_autoSkip",   false);
   const [lightMode,  setLightMode]  = usePersist("ctrl_lightMode",  false);
 
   // Light mode — dim everything except the player
@@ -81,15 +80,14 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-4">
-      {/* Back breadcrumb */}
-      <Link
-        href={`/anime/${anime.mal_id}`}
-        className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors mb-4"
-      >
-        <ChevronLeft size={15} />
-        {title}
-      </Link>
+    <div className="max-w-7xl mx-auto px-4 py-4 mt-6">
+      {/* Light-mode dim overlay — real DOM element so pointer-events works on iOS */}
+      {lightMode && (
+        <div
+          className="fixed inset-0 bg-black/[0.93] pointer-events-none"
+          style={{ zIndex: 998 }}
+        />
+      )}
 
       <div className="flex flex-col xl:flex-row gap-5">
         {/* ── Left: player + controls ── */}
@@ -102,6 +100,24 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
             />
           )}
 
+          {/* Reload — top right above video */}
+          <div className="flex justify-between mb-4">
+            {/* Back breadcrumb */}
+            <Link
+              href={`/anime/${anime.mal_id}`}
+              className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors"
+            >
+              <ChevronLeft size={15} />
+              {title}
+            </Link>
+            <button
+              onClick={() => embedRef.current?.reload()}
+              className="flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-[#1a1a2e] text-slate-500 border border-white/10 hover:text-white hover:border-white/30 transition-all"
+            >
+              <RefreshCw size={11} /> Reload
+            </button>
+          </div>
+
           {/* Placeholder keeps layout space when expanded */}
           {expanded && <div className="aspect-video w-full rounded-xl bg-black/20 mb-2" />}
 
@@ -111,63 +127,18 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
             style={{ zIndex: expanded ? 9999 : lightMode ? 9999 : undefined }}
           >
             <EmbedPlayer
+              ref={embedRef}
               malId={anime.mal_id}
               animeKaiBaseUrl={animeKaiBaseUrl}
               episode={currentEp}
               title={anime.title}
               titleEn={anime.title_english}
               posterUrl={anime.images?.jpg?.large_image_url}
-              autoPlay={autoPlay}
-              autoSkip={autoSkip}
               lightMode={lightMode}
-              onEnded={() => { if (autoNext) goNext(); }}
+              expanded={expanded}
+              onLightToggle={() => setLightMode(!lightMode)}
+              onExpand={expand}
             />
-
-          {/* Controls toolbar — inside watch-player-area so it's visible in light mode */}
-          <div className="flex flex-wrap items-center gap-1.5 mt-2 mb-1">
-            {([
-              { key: "autoPlay",  icon: <PlayCircle size={13} />,  label: "Autoplay",  val: autoPlay,  set: setAutoPlay },
-              { key: "autoNext",  icon: <SkipForward size={13} />, label: "Auto Next", val: autoNext,  set: setAutoNext },
-              { key: "autoSkip",  icon: <FastForward size={13} />, label: "Auto Skip", val: autoSkip,  set: setAutoSkip },
-            ] as const).map(({ key, icon, label, val, set }) => (
-              <button
-                key={key}
-                onClick={() => set(!val)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                  lightMode
-                    ? "bg-white/5 text-white/20 border-white/5 hover:text-white/30"
-                    : val
-                      ? "bg-violet-600/20 text-violet-300 border-violet-500/40"
-                      : "bg-[#1a1a2e] text-slate-500 border-white/8 hover:text-slate-300 hover:border-white/20"
-                }`}
-              >
-                {icon} {label}
-              </button>
-            ))}
-
-            {/* Light toggle — always prominent */}
-            <button
-              onClick={() => setLightMode(!lightMode)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                lightMode
-                  ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/40 hover:bg-yellow-500/30"
-                  : "bg-[#1a1a2e] text-slate-500 border-white/8 hover:text-slate-300 hover:border-white/20"
-              }`}
-            >
-              <Sun size={13} /> {lightMode ? "Light off" : "Light on"}
-            </button>
-
-            <button
-              onClick={expand}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ml-auto ${
-                lightMode
-                  ? "bg-white/5 text-white/20 border-white/5 hover:text-white/30"
-                  : "bg-[#1a1a2e] text-slate-500 border-white/8 hover:text-slate-300 hover:border-white/20"
-              }`}
-            >
-              <Maximize2 size={13} /> {expanded ? "Collapse" : "Expand"}
-            </button>
-          </div>
           </div>{/* end watch-player-area */}
 
           {/* Prev / title / Next */}
@@ -197,12 +168,15 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
           {/* Anime info strip */}
           <div className="bg-[#13131f] rounded-xl border border-white/5 p-4 flex gap-4 items-start">
             {anime.images?.jpg?.image_url && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={anime.images.jpg.image_url}
-                alt={title}
-                className="w-14 h-20 object-cover rounded-lg shrink-0 border border-white/10"
-              />
+              <div className="relative w-14 h-20 shrink-0 rounded-lg overflow-hidden border border-white/10">
+                <Image
+                  src={anime.images.jpg.image_url}
+                  alt={title}
+                  fill
+                  className="object-cover"
+                  sizes="56px"
+                />
+              </div>
             )}
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap gap-1.5 mb-2">

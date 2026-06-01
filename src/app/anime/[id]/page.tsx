@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 import Image from "next/image";
 import Link from "next/link";
@@ -15,10 +15,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { id } = await params;
     const { data } = await getAnimeById(Number(id));
     const title = data.title_english || data.title;
+    const description = (data.synopsis?.replace(/\[Written by MAL Rewrite\]/g, "").trim() ?? `Watch ${title} online free in HD on Aniwatsu.`).slice(0, 155);
+    const image = data.images?.jpg?.large_image_url ?? data.images?.jpg?.image_url;
+    const url = `https://aniwatsu.com/anime/${id}`;
     return {
-      title,
-      description: data.synopsis?.slice(0, 155),
-      openGraph: { images: [data.images?.jpg?.large_image_url] },
+      title: `${title} – Watch Online Free`,
+      description,
+      alternates: { canonical: url },
+      openGraph: {
+        type: "video.tv_show",
+        title: `${title} – Watch Online Free | Aniwatsu`,
+        description,
+        url,
+        siteName: "Aniwatsu",
+        images: image ? [{ url: image, width: 225, height: 320, alt: title }] : [],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${title} – Watch Online Free`,
+        description,
+        images: image ? [image] : [],
+      },
     };
   } catch {
     return { title: "Anime" };
@@ -48,8 +65,31 @@ export default async function AnimePage({ params }: Props) {
     { icon: <Users size={11} />,        label: "Members",   value: anime.members?.toLocaleString() },
   ].filter(r => r.value) as { icon: React.ReactNode; label: string; value: string }[];
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": anime.type === "Movie" ? "Movie" : "TVSeries",
+    name: title,
+    alternateName: anime.title !== title ? anime.title : undefined,
+    description: synopsis,
+    image: img,
+    url: `https://aniwatsu.com/anime/${id}`,
+    aggregateRating: anime.score ? {
+      "@type": "AggregateRating",
+      ratingValue: anime.score,
+      bestRating: 10,
+      ratingCount: anime.scored_by,
+    } : undefined,
+    genre: anime.genres?.map((g) => g.name),
+    numberOfEpisodes: anime.episodes ?? undefined,
+    startDate: anime.year ? String(anime.year) : undefined,
+  };
+
   return (
     <main className="min-h-screen bg-[#0d0d14]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       {/* ══════════════════════════════════════
           HERO — full cinematic image, no blur

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { RefreshCw, Server, Play } from "lucide-react";
+import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
+import { Server, Play, Sun, Maximize2 } from "lucide-react";
 import Image from "next/image";
 
 type Props = {
@@ -11,17 +11,19 @@ type Props = {
   title: string;
   titleEn?: string;
   posterUrl?: string;
-  autoPlay?: boolean;
-  autoSkip?: boolean;
   lightMode?: boolean;
-  onEnded?: () => void;
+  expanded?: boolean;
+  onLightToggle?: () => void;
+  onExpand?: () => void;
 };
+
+export type EmbedPlayerHandle = { reload: () => void };
 
 type Server_ = { label: string; url: string };
 
 const storageKey = (malId: number, ep: number) => `watch_${malId}_ep${ep}`;
 
-export default function EmbedPlayer({ malId, episode, title, titleEn, posterUrl, autoPlay, autoSkip, lightMode, onEnded }: Props) {
+const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ malId, episode, title, titleEn, posterUrl, lightMode, expanded, onLightToggle, onExpand }: Props, ref) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [servers, setServers] = useState<Server_[]>([]);
   const [fetching, setFetching] = useState(false);
@@ -29,6 +31,8 @@ export default function EmbedPlayer({ malId, episode, title, titleEn, posterUrl,
   const [userClicked, setUserClicked] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(true); // only on very first load
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [showHint, setShowHint] = useState(false);
+  const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [fetchKey, setFetchKey] = useState(0);
   const hasEverPlayed = useRef(false);
   const preferredServer = useRef<string | null>(null);
@@ -62,6 +66,8 @@ export default function EmbedPlayer({ malId, episode, title, titleEn, posterUrl,
       setOverlayVisible(false);
     }
     setIframeLoaded(false);
+    setShowHint(false);
+    if (hintTimer.current) clearTimeout(hintTimer.current);
 
     const params = new URLSearchParams({ title, ep: String(episode) });
     if (titleEn) params.set("titleEn", titleEn);
@@ -132,15 +138,11 @@ export default function EmbedPlayer({ malId, episode, title, titleEn, posterUrl,
           localStorage.setItem(storageKey(malId, episode), String(time));
         }
 
-        // Video ended
-        if (data?.event === "ended" || data?.type === "ended") {
-          onEnded?.();
-        }
       } catch { /* non-JSON messages */ }
     };
     window.addEventListener("message", handler);
     return () => window.removeEventListener("message", handler);
-  }, [malId, episode, onEnded]);
+  }, [malId, episode]);
 
   const handleClick = () => setUserClicked(true);
 
@@ -148,6 +150,8 @@ export default function EmbedPlayer({ malId, episode, title, titleEn, posterUrl,
     preferredServer.current = servers[idx]?.label ?? null;
     setActiveIdx(idx);
     setIframeLoaded(false);
+    setShowHint(false);
+    if (hintTimer.current) clearTimeout(hintTimer.current);
   };
 
   const reload = () => {
@@ -160,45 +164,12 @@ export default function EmbedPlayer({ malId, episode, title, titleEn, posterUrl,
     setFetchKey(k => k + 1); // re-trigger server fetch
   };
 
+  useImperativeHandle(ref, () => ({ reload }));
+
   const playerKey = `${malId}-${episode}`;
 
   return (
     <div className="w-full" key={playerKey}>
-      {/* Server tabs */}
-      <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <span className={`text-xs flex items-center gap-1 ${lightMode ? "text-white/20" : "text-slate-500"}`}>
-          <Server size={11} /> Server:
-        </span>
-        {servers.map((s, i) => (
-          <button
-            key={i}
-            onClick={() => switchServer(i)}
-            className={`px-3 py-1 rounded-lg text-xs font-medium border transition-all ${
-              lightMode
-                ? activeIdx === i
-                  ? "bg-white/10 text-white/40 border-white/15"
-                  : "bg-white/5 text-white/20 border-white/8"
-                : activeIdx === i
-                  ? "bg-violet-600 text-white border-violet-600"
-                  : "bg-[#1a1a2e] text-slate-400 border-white/10 hover:border-violet-500/40 hover:text-violet-300"
-            }`}
-          >
-            {s.label}
-          </button>
-        ))}
-        {fetching && (
-          <span className="text-xs text-slate-600 px-2 flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full border border-violet-500/40 border-t-violet-400 animate-spin inline-block" />
-            Loading servers…
-          </span>
-        )}
-        <button
-          onClick={reload}
-          className="ml-auto flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-[#1a1a2e] text-slate-500 border border-white/10 hover:text-white hover:border-white/30 transition-all"
-        >
-          <RefreshCw size={11} /> Reload
-        </button>
-      </div>
 
       {/* Player */}
       <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden">
@@ -265,16 +236,75 @@ export default function EmbedPlayer({ malId, episode, title, titleEn, posterUrl,
             allowFullScreen
             allow="autoplay; fullscreen; picture-in-picture; encrypted-media; web-share"
             referrerPolicy="no-referrer-when-downgrade"
-            onLoad={() => { setIframeLoaded(true); setOverlayVisible(false); hasEverPlayed.current = true; }}
+            onLoad={() => {
+              setIframeLoaded(true);
+              setOverlayVisible(false);
+              hasEverPlayed.current = true;
+              hintTimer.current = setTimeout(() => setShowHint(true), 5000);
+            }}
           />
         )}
+
       </div>
 
-      {userClicked && activeUrl && (
-        <p className="text-slate-700 text-xs mt-1.5 text-center">
-          If a server doesn&apos;t load, try another server above.
-        </p>
-      )}
+      {/* Unified toolbar: servers left, controls right */}
+      <div className="flex items-center gap-2 mt-4 mb-1 flex-wrap">
+        <span className={`text-xs flex items-center gap-1 ${lightMode ? "text-white/20" : "text-slate-500"}`}>
+          <Server size={11} /> Server:
+        </span>
+        {servers.map((s, i) => (
+          <button
+            key={i}
+            onClick={() => switchServer(i)}
+            className={`px-3 py-1 rounded-lg text-xs font-medium border transition-all ${
+              lightMode
+                ? activeIdx === i
+                  ? "bg-white/10 text-white/40 border-white/15"
+                  : "bg-white/5 text-white/20 border-white/8"
+                : activeIdx === i
+                  ? "bg-violet-600 text-white border-violet-600"
+                  : "bg-[#1a1a2e] text-slate-400 border-white/10 hover:border-violet-500/40 hover:text-violet-300"
+            }`}
+          >
+            {s.label}
+          </button>
+        ))}
+        {fetching && (
+          <span className="text-xs text-slate-600 px-2 flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full border border-violet-500/40 border-t-violet-400 animate-spin inline-block" />
+            Loading servers…
+          </span>
+        )}
+        {/* Light + Expand on the right */}
+        <div className="ml-auto flex items-center gap-1.5">
+          {onLightToggle && (
+            <button
+              onClick={onLightToggle}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium border transition-all ${
+                lightMode
+                  ? "bg-white/5 text-slate-400 border-white/15 hover:border-white/25"
+                  : "bg-[#1a1a2e] text-slate-500 border-white/8 hover:text-slate-300 hover:border-white/20"
+              }`}
+            >
+              <Sun size={13} /> {lightMode ? "Light off" : "Light on"}
+            </button>
+          )}
+          {onExpand && (
+            <button
+              onClick={onExpand}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium border transition-all ${
+                lightMode
+                  ? "bg-white/5 text-white/20 border-white/5 hover:text-white/30"
+                  : "bg-[#1a1a2e] text-slate-500 border-white/8 hover:text-slate-300 hover:border-white/20"
+              }`}
+            >
+              <Maximize2 size={13} /> {expanded ? "Collapse" : "Expand"}
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
-}
+});
+
+export default EmbedPlayer;
