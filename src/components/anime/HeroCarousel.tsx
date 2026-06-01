@@ -193,7 +193,7 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
       </button>
 
       {/* Dots */}
-      <div className="absolute bottom-6 right-6 flex gap-1.5" style={{ transform: "translateY(calc(-1 * var(--shrink-offset, 0px)))" }}>
+      <div className="absolute right-6 z-10 flex gap-1.5" style={{ bottom: "70px", transform: "translateY(calc(-1 * var(--shrink-offset, 0px)))" }}>
         {items.map((_, i) => (
           <button
             key={i}
