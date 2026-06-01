@@ -81,6 +81,14 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-4 mt-6">
+      {/* Light-mode dim overlay — real DOM element so pointer-events works on iOS */}
+      {lightMode && (
+        <div
+          className="fixed inset-0 bg-black/[0.93] pointer-events-none"
+          style={{ zIndex: 998 }}
+        />
+      )}
+
       <div className="flex flex-col xl:flex-row gap-5">
         {/* ── Left: player + controls ── */}
         <div className="flex-1 min-w-0">

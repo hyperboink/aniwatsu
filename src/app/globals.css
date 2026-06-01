@@ -81,18 +81,6 @@ body {
 .slide-down { animation: slideDown 0.25s ease forwards; }
 
 /* Light / theater mode */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0);
-  z-index: 999;
-  pointer-events: none;
-  transition: background 0.4s ease;
-}
-body.light-mode::after {
-  background: rgba(0, 0, 0, 0.93);
-}
 body.light-mode .watch-player-area {
   z-index: 9999;
 }
