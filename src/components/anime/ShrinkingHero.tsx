@@ -9,6 +9,10 @@ export default function ShrinkingHero({ children }: { children: React.ReactNode 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+
+    // Desktop only (≥768px)
+    if (window.innerWidth < 768) return;
+
     const full = el.offsetHeight;
 
     const onScroll = () => {

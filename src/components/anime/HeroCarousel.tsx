@@ -18,6 +18,9 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
   useEffect(() => {
     const el = bgRef.current;
     if (!el) return;
+    // Desktop only (≥768px)
+    if (window.innerWidth < 768) return;
+
     const onScroll = () => {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(() => {

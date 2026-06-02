@@ -149,7 +149,7 @@ export default async function AnimePage({ params }: Props) {
           </Link>
 
           {/* Bottom info block */}
-          <div className="max-w-xl pb-4">
+          <div className="max-w-xl pb-4 overflow-hidden">
 
             {/* Badges */}
             <div className="flex flex-wrap gap-2 mb-3">
@@ -207,10 +207,10 @@ export default async function AnimePage({ params }: Props) {
 
             {/* Genres */}
             {anime.genres && anime.genres.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-5">
+              <div className="flex flex-wrap gap-1.5 mb-5 max-w-full">
                 {anime.genres.map((g) => (
                   <Link key={g.mal_id} href={`/browse?genre=${g.mal_id}`}
-                    className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-violet-500/30 hover:text-violet-200 border border-white/10 transition-all">
+                    className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-violet-500/30 hover:text-violet-200 border border-white/10 transition-all whitespace-nowrap">
                     {g.name}
                   </Link>
                 ))}
