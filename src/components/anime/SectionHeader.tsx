@@ -19,10 +19,11 @@ export default function SectionHeader({ title, icon, href }: Props) {
       {href && (
         <Link
           href={href}
+          aria-label={`View all ${title}`}
           className="flex items-center gap-1 text-sm text-violet-400 hover:text-violet-300 transition-colors font-medium"
         >
           View all
-          <ChevronRight size={15} />
+          <ChevronRight size={15} aria-hidden="true" />
         </Link>
       )}
     </div>

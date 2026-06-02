@@ -59,7 +59,7 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
   const img = anime.images?.jpg?.large_image_url;
 
   return (
-    <div className="relative">
+    <div className="relative" aria-label="Featured anime carousel" role="region">
     <div className="relative h-[70vh] min-h-[480px] max-h-[720px] overflow-hidden">
       {/* Background */}
       <div
@@ -166,16 +166,18 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
         <div className="flex items-center gap-3">
           <Link
             href={`/watch/${anime.mal_id}`}
+            aria-label={`Watch ${title} now`}
             className="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white font-semibold px-6 py-3 rounded-xl transition-colors glow"
           >
-            <Play size={17} fill="white" />
+            <Play size={17} fill="white" aria-hidden="true" />
             Watch Now
           </Link>
           <Link
             href={`/anime/${anime.mal_id}`}
+            aria-label={`View details for ${title}`}
             className="flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white font-semibold px-6 py-3 rounded-xl transition-colors border border-white/10"
           >
-            <Info size={17} />
+            <Info size={17} aria-hidden="true" />
             Details
           </Link>
         </div>
@@ -184,22 +186,27 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
       {/* Carousel controls */}
       <button
         onClick={prev}
+        aria-label="Previous slide"
         className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 flex items-center justify-center text-white border border-white/10"
       >
-        <ChevronLeft size={20} />
+        <ChevronLeft size={20} aria-hidden="true" />
       </button>
       <button
         onClick={next}
+        aria-label="Next slide"
         className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 flex items-center justify-center text-white border border-white/10"
       >
-        <ChevronRight size={20} />
+        <ChevronRight size={20} aria-hidden="true" />
       </button>
 
       {/* Dots */}
-      <div className="absolute right-6 z-10 flex gap-1.5" style={{ bottom: "70px", transform: "translateY(calc(-1 * var(--shrink-offset, 0px)))" }}>
+      <div role="tablist" aria-label="Carousel slides" className="absolute right-6 z-10 flex gap-1.5" style={{ bottom: "70px", transform: "translateY(calc(-1 * var(--shrink-offset, 0px)))" }}>
         {items.map((_, i) => (
           <button
             key={i}
+            role="tab"
+            aria-selected={i === idx}
+            aria-label={`Go to slide ${i + 1}`}
             onClick={() => go(i)}
             className={`h-1.5 rounded-full transition-all duration-300 ${
               i === idx ? "w-6 bg-violet-400" : "w-1.5 bg-white/30 hover:bg-white/50"

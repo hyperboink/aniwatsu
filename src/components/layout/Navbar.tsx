@@ -162,10 +162,12 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setBrowseOpen((p) => !p)}
+                aria-expanded={browseOpen}
+                aria-haspopup="true"
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
               >
                 Browse
-                <ChevronDown size={14} className={`transition-transform ${browseOpen ? "rotate-180" : ""}`} />
+                <ChevronDown size={14} aria-hidden="true" className={`transition-transform ${browseOpen ? "rotate-180" : ""}`} />
               </button>
               {browseOpen && (
                 <div className="absolute top-full left-0 mt-2 w-44 bg-[#1a1a2e] border border-white/10 rounded-xl shadow-2xl shadow-black/50 overflow-hidden slide-down">
@@ -192,17 +194,21 @@ export default function Navbar() {
             {/* Search toggle */}
             <button
               onClick={() => setSearchOpen((p) => !p)}
+              aria-label={searchOpen ? "Close search" : "Open search"}
+              aria-expanded={searchOpen}
               className="w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
             >
-              {searchOpen ? <X size={18} /> : <Search size={18} />}
+              {searchOpen ? <X size={18} aria-hidden="true" /> : <Search size={18} aria-hidden="true" />}
             </button>
 
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileOpen((p) => !p)}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
               className="md:hidden w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
             >
-              {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+              {mobileOpen ? <X size={18} aria-hidden="true" /> : <Menu size={18} aria-hidden="true" />}
             </button>
           </div>
         </div>
