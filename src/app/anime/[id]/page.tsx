@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Star, Play, ChevronLeft, Users, BarChart2, Tv, BookOpen, Info, Layers, Clock, Calendar, Building2, ShieldCheck, Hash, Tag } from "lucide-react";
 import AnimeGrid from "@/components/anime/AnimeGrid";
 import SectionHeader from "@/components/anime/SectionHeader";
+import ParallaxBg from "@/components/anime/ParallaxBg";
 import { getAnimeById, getAnimeRecommendations } from "@/lib/api";
 import type { Metadata } from "next";
 
@@ -96,43 +97,45 @@ export default async function AnimePage({ params }: Props) {
       ══════════════════════════════════════ */}
       <div className="relative h-[400px] md:h-[560px] overflow-hidden">
 
-        {/* Ambient layer — blurred, saturated, fills the whole hero with colour */}
-        {img && (
-          <Image src={img} alt="" fill priority aria-hidden
-            className="object-cover object-top scale-125"
-            style={{ filter: 'blur(22px) brightness(0.45) saturate(1.4)' }}
-            sizes="100vw"
-            quality={60}
-          />
-        )}
-
-        {/* Sharp layer — right half, cinematic vignette mask on all edges */}
-        {img && (
-          <div
-            className="absolute right-0 top-0 bottom-0 w-[50%]"
-            style={{
-              maskImage: `radial-gradient(ellipse 88% 90% at 65% 36%,
-                black 0%,
-                black 18%,
-                rgba(0,0,0,0.85) 38%,
-                rgba(0,0,0,0.25) 58%,
-                transparent 72%)`,
-              WebkitMaskImage: `radial-gradient(ellipse 88% 90% at 65% 36%,
-                black 0%,
-                black 18%,
-                rgba(0,0,0,0.85) 38%,
-                rgba(0,0,0,0.25) 58%,
-                transparent 72%)`,
-            }}
-          >
-            <Image src={img} alt={title} fill priority
-              className="object-cover"
-              style={{ objectPosition: '50% 33%' }}
-              sizes="50vw"
-              quality={100}
+        <ParallaxBg>
+          {/* Ambient layer — blurred, saturated, fills the whole hero with colour */}
+          {img && (
+            <Image src={img} alt="" fill priority aria-hidden
+              className="object-cover object-top scale-125"
+              style={{ filter: 'blur(22px) brightness(0.45) saturate(1.4)' }}
+              sizes="100vw"
+              quality={60}
             />
-          </div>
-        )}
+          )}
+
+          {/* Sharp layer — right half, cinematic vignette mask on all edges */}
+          {img && (
+            <div
+              className="absolute right-0 top-0 bottom-0 w-[50%]"
+              style={{
+                maskImage: `radial-gradient(ellipse 88% 90% at 65% 36%,
+                  black 0%,
+                  black 18%,
+                  rgba(0,0,0,0.85) 38%,
+                  rgba(0,0,0,0.25) 58%,
+                  transparent 72%)`,
+                WebkitMaskImage: `radial-gradient(ellipse 88% 90% at 65% 36%,
+                  black 0%,
+                  black 18%,
+                  rgba(0,0,0,0.85) 38%,
+                  rgba(0,0,0,0.25) 58%,
+                  transparent 72%)`,
+              }}
+            >
+              <Image src={img} alt={title} fill priority
+                className="object-cover"
+                style={{ objectPosition: '50% 33%' }}
+                sizes="50vw"
+                quality={100}
+              />
+            </div>
+          )}
+        </ParallaxBg>
 
         {/* Left-side text gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#0d0d14] from-25% via-[#0d0d14]/50 via-50% to-transparent" />
