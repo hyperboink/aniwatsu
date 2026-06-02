@@ -2,7 +2,7 @@ export const revalidate = 3600;
 
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Play, ChevronLeft, Users, BarChart2, Tv, BookOpen, Info, Layers, Clock, Calendar, Building2, ShieldCheck, Hash } from "lucide-react";
+import { Star, Play, ChevronLeft, Users, BarChart2, Tv, BookOpen, Info, Layers, Clock, Calendar, Building2, ShieldCheck, Hash, Tag } from "lucide-react";
 import AnimeGrid from "@/components/anime/AnimeGrid";
 import SectionHeader from "@/components/anime/SectionHeader";
 import { getAnimeById, getAnimeRecommendations } from "@/lib/api";
@@ -59,10 +59,9 @@ export default async function AnimePage({ params }: Props) {
     { icon: <Layers size={11} />,       label: "Episodes",  value: anime.episodes ? String(anime.episodes) : null },
     { icon: <Clock size={11} />,        label: "Duration",  value: anime.duration?.replace("per ep", "/ ep") },
     { icon: <Hash size={11} />,         label: "Status",    value: anime.status },
-    { icon: <Calendar size={11} />,     label: "Season",    value: anime.season && anime.year ? `${anime.season.charAt(0).toUpperCase() + anime.season.slice(1)} ${anime.year}` : null },
     { icon: <Building2 size={11} />,    label: "Studio",    value: anime.studios?.map(s => s.name).join(", ") || null },
+    { icon: <Tag size={11} />,          label: "Genre",     value: anime.genres?.map(g => g.name).join(" / ") || null },
     { icon: <ShieldCheck size={11} />,  label: "Rating",    value: anime.rating },
-    { icon: <Users size={11} />,        label: "Members",   value: anime.members?.toLocaleString() },
   ].filter(r => r.value) as { icon: React.ReactNode; label: string; value: string }[];
 
   const jsonLd = {
@@ -289,16 +288,6 @@ export default async function AnimePage({ params }: Props) {
             {synopsis && (
               <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-[#13131f] p-6">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400/70 mb-3 flex items-center gap-1.5"><BookOpen size={11} /> Synopsis</p>
-                {anime.genres && anime.genres.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {anime.genres.map((g) => (
-                      <Link key={g.mal_id} href={`/browse?genre=${g.mal_id}`}
-                        className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-violet-500/30 hover:text-violet-200 border border-white/10 transition-all whitespace-nowrap">
-                        {g.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
                 <p className="text-slate-300 text-sm leading-[1.85] line-clamp-[10]">{synopsis}</p>
               </div>
             )}
