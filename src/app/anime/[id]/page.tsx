@@ -94,7 +94,7 @@ export default async function AnimePage({ params }: Props) {
           HERO — full cinematic image, no blur
           Info overlaid on the dark left side
       ══════════════════════════════════════ */}
-      <div className="relative h-[480px] md:h-[560px] overflow-hidden">
+      <div className="relative h-[400px] md:h-[560px] overflow-hidden">
 
         {/* Ambient layer — blurred, saturated, fills the whole hero with colour */}
         {img && (
@@ -143,12 +143,12 @@ export default async function AnimePage({ params }: Props) {
         <div className="absolute inset-0 flex flex-col justify-between max-w-6xl mx-auto px-4 md:px-6 py-6 w-full left-0 right-0">
 
           {/* Back */}
-          <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition-colors mt-14 w-fit">
+          <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition-colors mt-2 sm:mt-14 w-fit">
             <ChevronLeft size={15} /> Back to home
           </Link>
 
           {/* Bottom info block */}
-          <div className="max-w-2xl pb-4">
+          <div className="max-w-2xl sm:pb-4">
 
             {/* Badges */}
             <div className="flex flex-wrap gap-2 mb-3">
@@ -178,6 +178,14 @@ export default async function AnimePage({ params }: Props) {
             {anime.title !== title && (
               <p className="text-white/40 text-sm mb-3">{anime.title}</p>
             )}
+
+            <div className="flex">
+              <Link href={`/watch/${anime.mal_id}`}
+                  className="md:hidden flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors glow">
+                  <Play size={17} fill="white" />
+                  Watch Now
+                </Link>
+            </div>
 
             {/* Score row — hidden on mobile, shown in poster section instead */}
             <div className="hidden md:flex flex-wrap items-center gap-4 mb-4">
@@ -222,22 +230,23 @@ export default async function AnimePage({ params }: Props) {
             {/* Mobile: row — poster left, stats right. Desktop: column */}
             <div className="flex flex-row md:flex-col gap-4 md:gap-3">
               {/* Poster */}
-              <div className="shrink-0 w-32 sm:w-40 md:w-full flex flex-col gap-3">
+              <div className="shrink-0 w-40 sm:w-40 md:w-full flex flex-col gap-3">
                 <div className="relative w-full aspect-[2/3] rounded-xl overflow-hidden shadow-2xl shadow-black/80">
                   {img
                     ? <Image src={img} alt={title} fill className="object-cover" sizes="208px" quality={100} />
                     : <div className="w-full h-full bg-[#1a1a2e] flex items-center justify-center"><Tv size={36} className="text-slate-600" /></div>
                   }
                 </div>
+                {/* Desktop-only buttons */}
                 <Link href={`/watch/${anime.mal_id}`}
-                  className="relative flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors glow">
+                  className="hidden md:flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors glow">
                   <Play size={17} fill="white" />
                   Watch Now
                 </Link>
                 {anime.trailer?.youtube_id && (
                   <a href={`https://youtube.com/watch?v=${anime.trailer.youtube_id}`}
                     target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white font-semibold py-3 rounded-xl text-sm transition-all">
+                    className="hidden md:flex items-center justify-center gap-2 w-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white font-semibold py-3 rounded-xl text-sm transition-all">
                     <Play size={17} />
                     Trailer
                   </a>
@@ -278,6 +287,18 @@ export default async function AnimePage({ params }: Props) {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Mobile-only Watch Now button */}
+            <div className="md:hidden flex gap-3 mt-1">
+              {anime.trailer?.youtube_id && (
+                <a href={`https://youtube.com/watch?v=${anime.trailer.youtube_id}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-5 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white font-semibold py-3 rounded-xl text-sm transition-all">
+                  <Play size={17} />
+                  Trailer
+                </a>
+              )}
             </div>
           </div>
 
