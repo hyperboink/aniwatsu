@@ -173,7 +173,7 @@ export default function SearchModal({ open, onClose }: Props) {
                 const title = h.title_english || h.title;
                 const active = activeIdx === i;
                 return (
-                  <button key={h.mal_id} type="button"
+                  <button key={`${h.mal_id}-${i}`} type="button"
                     onMouseDown={() => goAnime(h.mal_id)}
                     onMouseEnter={() => setActiveIdx(i)}
                     className="w-full flex items-center gap-4 px-5 py-3 text-left transition-colors"
