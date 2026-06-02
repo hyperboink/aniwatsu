@@ -149,7 +149,7 @@ export default async function AnimePage({ params }: Props) {
           </Link>
 
           {/* Bottom info block */}
-          <div className="max-w-xl pb-4 overflow-hidden">
+          <div className="max-w-2xl pb-4">
 
             {/* Badges */}
             <div className="flex flex-wrap gap-2 mb-3">
@@ -180,8 +180,8 @@ export default async function AnimePage({ params }: Props) {
               <p className="text-white/40 text-sm mb-3">{anime.title}</p>
             )}
 
-            {/* Score row */}
-            <div className="flex flex-wrap items-center gap-4 mb-4">
+            {/* Score row — hidden on mobile, shown in poster section instead */}
+            <div className="hidden md:flex flex-wrap items-center gap-4 mb-4">
               {anime.score && (
                 <div className="flex items-center gap-1.5">
                   <Star size={18} className="text-yellow-400" fill="currentColor" />
@@ -205,17 +205,6 @@ export default async function AnimePage({ params }: Props) {
               )}
             </div>
 
-            {/* Genres */}
-            {anime.genres && anime.genres.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-5 max-w-full">
-                {anime.genres.map((g) => (
-                  <Link key={g.mal_id} href={`/browse?genre=${g.mal_id}`}
-                    className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-violet-500/30 hover:text-violet-200 border border-white/10 transition-all whitespace-nowrap">
-                    {g.name}
-                  </Link>
-                ))}
-              </div>
-            )}
 
           </div>
         </div>
@@ -227,29 +216,70 @@ export default async function AnimePage({ params }: Props) {
       <div className="max-w-6xl mx-auto px-4 md:px-6">
 
         {/* Poster + main content */}
-        <div className="flex flex-col md:flex-row gap-6 -mt-20 md:-mt-24 relative z-10">
+        <div className="flex flex-col md:flex-row gap-6 mt-4 md:-mt-10 relative z-10">
 
           {/* Poster + actions */}
-          <div className="shrink-0 w-36 sm:w-44 md:w-52 flex flex-col gap-3">
-            <div className="relative w-full aspect-[2/3] rounded-xl overflow-hidden shadow-2xl shadow-black/80">
-              {img
-                ? <Image src={img} alt={title} fill className="object-cover" sizes="208px" quality={100} />
-                : <div className="w-full h-full bg-[#1a1a2e] flex items-center justify-center"><Tv size={36} className="text-slate-600" /></div>
-              }
+          <div className="shrink-0 md:w-52">
+            {/* Mobile: row — poster left, stats right. Desktop: column */}
+            <div className="flex flex-row md:flex-col gap-4 md:gap-3">
+              {/* Poster */}
+              <div className="shrink-0 w-32 sm:w-40 md:w-full flex flex-col gap-3">
+                <div className="relative w-full aspect-[2/3] rounded-xl overflow-hidden shadow-2xl shadow-black/80">
+                  {img
+                    ? <Image src={img} alt={title} fill className="object-cover" sizes="208px" quality={100} />
+                    : <div className="w-full h-full bg-[#1a1a2e] flex items-center justify-center"><Tv size={36} className="text-slate-600" /></div>
+                  }
+                </div>
+                <Link href={`/watch/${anime.mal_id}`}
+                  className="relative flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors glow">
+                  <Play size={17} fill="white" />
+                  Watch Now
+                </Link>
+                {anime.trailer?.youtube_id && (
+                  <a href={`https://youtube.com/watch?v=${anime.trailer.youtube_id}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white font-semibold py-3 rounded-xl text-sm transition-all">
+                    <Play size={17} />
+                    Trailer
+                  </a>
+                )}
+              </div>
+
+              {/* Mobile-only: rating, rank, popularity, genres */}
+              <div className="flex-1 md:hidden flex flex-col gap-3 pt-1">
+                {anime.score && (
+                  <div className="flex items-center gap-1.5">
+                    <Star size={16} className="text-yellow-400" fill="currentColor" />
+                    <span className="text-xl font-black text-white">{anime.score.toFixed(2)}</span>
+                    {anime.scored_by && (
+                      <span className="text-white/40 text-xs">{(anime.scored_by / 1000).toFixed(0)}k</span>
+                    )}
+                  </div>
+                )}
+                {anime.rank && (
+                  <div className="flex items-center gap-1 text-sm text-white/60">
+                    <BarChart2 size={13} />
+                    <span>Rank <span className="text-white font-bold">#{anime.rank}</span></span>
+                  </div>
+                )}
+                {anime.popularity && (
+                  <div className="flex items-center gap-1 text-sm text-white/60">
+                    <Users size={13} />
+                    <span>Popularity <span className="text-white font-bold">#{anime.popularity}</span></span>
+                  </div>
+                )}
+                {anime.genres && anime.genres.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {anime.genres.map((g) => (
+                      <Link key={g.mal_id} href={`/browse?genre=${g.mal_id}`}
+                        className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/70 border border-white/10 whitespace-nowrap">
+                        {g.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-            <Link href={`/watch/${anime.mal_id}`}
-              className="relative flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors glow">
-              <Play size={17} fill="white" />
-              Watch Now
-            </Link>
-            {anime.trailer?.youtube_id && (
-              <a href={`https://youtube.com/watch?v=${anime.trailer.youtube_id}`}
-                target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white font-semibold py-3 rounded-xl text-sm transition-all">
-                <Play size={17} />
-                Trailer
-              </a>
-            )}
           </div>
 
           {/* Synopsis + Details */}
@@ -259,6 +289,16 @@ export default async function AnimePage({ params }: Props) {
             {synopsis && (
               <div className="lg:col-span-2 rounded-2xl border border-white/5 bg-[#13131f] p-6">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400/70 mb-3 flex items-center gap-1.5"><BookOpen size={11} /> Synopsis</p>
+                {anime.genres && anime.genres.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {anime.genres.map((g) => (
+                      <Link key={g.mal_id} href={`/browse?genre=${g.mal_id}`}
+                        className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-violet-500/30 hover:text-violet-200 border border-white/10 transition-all whitespace-nowrap">
+                        {g.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
                 <p className="text-slate-300 text-sm leading-[1.85] line-clamp-[10]">{synopsis}</p>
               </div>
             )}
