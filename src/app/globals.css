@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@source "../**/*.{ts,tsx}";
+@source "../../app/**/*.{ts,tsx}";
+@source "../../components/**/*.{ts,tsx}";
 
 :root {
   --bg-primary: #0d0d14;
@@ -19,7 +22,14 @@
 }
 
 * { box-sizing: border-box; }
-button { cursor: pointer !important; }
+button, a {
+  touch-action: manipulation;
+}
+button {
+  cursor: pointer !important;
+  min-height: 24px;
+  min-width: 24px;
+}
 html { scroll-behavior: smooth; }
 
 body {
@@ -27,8 +37,11 @@ body {
   color: var(--text-primary);
   font-family: var(--font-geist-sans), Arial, sans-serif;
   min-height: 100vh;
-  overflow-x: hidden;
 }
+
+/* overflow-x on html instead of body — avoids iOS Safari bug where
+   overflow on body breaks touch events on position:fixed elements */
+html { overflow-x: hidden; }
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }

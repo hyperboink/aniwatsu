@@ -3,13 +3,13 @@ import { Tv, ExternalLink } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/5 bg-[#0d0d14] mt-10">
+    <footer aria-label="Site footer" className="border-t border-white/5 bg-[#0d0d14] mt-10">
       <div className="max-w-7xl mx-auto px-4 py-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center">
+            <Link href="/" aria-label="Aniwatsu home" className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 rounded-lg bg-violet-600 flex items-center justify-center" aria-hidden="true">
                 <Tv size={14} className="text-white" />
               </div>
               <span className="text-lg font-bold text-white">
@@ -62,21 +62,8 @@ export default function Footer() {
 
         <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-slate-600">
-            © 2025 Aniwatsu. Anime data provided by{" "}
-            <a href="https://jikan.moe" target="_blank" rel="noopener noreferrer" className="text-violet-500 hover:text-violet-400">
-              Jikan API
-            </a>{" "}
-            (MyAnimeList).
+            © 2025 Aniwatsu
           </p>
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-slate-600 hover:text-white transition-colors flex items-center gap-1 text-xs"
-          >
-            <ExternalLink size={14} />
-            GitHub
-          </a>
         </div>
       </div>
     </footer>

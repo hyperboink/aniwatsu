@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, Clock, TrendingUp, Star, Flame } from "lucide-react";
+import { Search, X, Clock, TrendingUp, Trophy, Flame, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -100,16 +100,16 @@ export default function SearchModal({ open, onClose }: Props) {
   const empty = hasQuery && !loading && hits.length === 0;
 
   const categories = [
-    { icon: <Flame size={15} />, label: "Trending", href: "/browse?filter=airing", color: "text-orange-400" },
-    { icon: <TrendingUp size={15} />, label: "Popular", href: "/browse?filter=bypopularity", color: "text-blue-400" },
-    { icon: <Star size={15} />, label: "Top Rated", href: "/browse?filter=favorite", color: "text-yellow-400" },
-    { icon: <Clock size={15} />, label: "Upcoming", href: "/browse?filter=upcoming", color: "text-violet-400" },
+    { icon: <Flame size={15} />, label: "Trending", href: "/browse?filter=airing", color: "text-slate-500" },
+    { icon: <Star size={15} />, label: "Popular", href: "/browse?filter=bypopularity", color: "text-slate-500" },
+    { icon: <Trophy size={15} />, label: "Top Rated", href: "/browse?filter=favorite", color: "text-slate-500" },
+    { icon: <Clock size={15} />, label: "Upcoming", href: "/browse?filter=upcoming", color: "text-slate-500" },
   ];
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-start justify-center px-4" style={{ paddingTop: "68px" }}>
+    <div role="dialog" aria-modal="true" aria-label="Search anime" className="fixed inset-0 z-[9999] flex items-start justify-center px-4" style={{ paddingTop: "68px" }}>
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70" onClick={onClose} aria-hidden="true" />
 
       {/* Card */}
       <div className="sm-card relative w-full max-w-2xl rounded-2xl overflow-hidden flex flex-col" style={{ maxHeight: "calc(100vh - 90px)" }}>
@@ -126,17 +126,22 @@ export default function SearchModal({ open, onClose }: Props) {
             onChange={e => { setQ(e.target.value); search(e.target.value); setActiveIdx(-1); }}
             onKeyDown={onKeyDown}
             placeholder='Search for anime ex: "Naruto"'
+            aria-label="Search for anime"
+            role="combobox"
+            aria-expanded={hits.length > 0}
+            aria-autocomplete="list"
             className="flex-1 bg-transparent text-white text-base placeholder-slate-600 focus:outline-none"
             autoComplete="off"
             spellCheck={false}
           />
           {q ? (
             <button onClick={() => { setQ(""); setHits([]); inputRef.current?.focus(); }}
+              aria-label="Clear search"
               className="shrink-0 text-slate-500 hover:text-white transition-colors">
-              <X size={16} />
+              <X size={16} aria-hidden="true" />
             </button>
           ) : (
-            <button onClick={onClose} className="shrink-0 text-[11px] text-slate-600 border border-white/10 rounded-md px-2 py-1 hover:text-slate-400 transition-colors">
+            <button onClick={onClose} aria-label="Close search" className="shrink-0 text-[11px] text-slate-600 border border-white/10 rounded-md px-2 py-1 hover:text-slate-400 transition-colors">
               esc
             </button>
           )}
@@ -173,7 +178,7 @@ export default function SearchModal({ open, onClose }: Props) {
                 const title = h.title_english || h.title;
                 const active = activeIdx === i;
                 return (
-                  <button key={h.mal_id} type="button"
+                  <button key={`${h.mal_id}-${i}`} type="button"
                     onMouseDown={() => goAnime(h.mal_id)}
                     onMouseEnter={() => setActiveIdx(i)}
                     className="w-full flex items-center gap-4 px-5 py-3 text-left transition-colors"
@@ -204,7 +209,7 @@ export default function SearchModal({ open, onClose }: Props) {
                     {/* Score */}
                     {h.score && (
                       <div className="shrink-0 flex items-center gap-1">
-                        <Star size={11} className="text-yellow-400" fill="currentColor" />
+                        <Star size={11} className="text-yellow-400" />
                         <span className="text-sm font-semibold text-slate-300">{h.score.toFixed(1)}</span>
                       </div>
                     )}

@@ -2,9 +2,10 @@ export const revalidate = 3600;
 
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Play, ChevronLeft, Users, BarChart2, Tv, BookOpen, Info, Layers, Clock, Calendar, Building2, ShieldCheck, Hash } from "lucide-react";
+import { Star, Play, ChevronLeft, Users, BarChart2, Tv, BookOpen, Info, Layers, Clock, Calendar, Building2, ShieldCheck, Hash, Tag } from "lucide-react";
 import AnimeGrid from "@/components/anime/AnimeGrid";
 import SectionHeader from "@/components/anime/SectionHeader";
+import ParallaxBg from "@/components/anime/ParallaxBg";
 import { getAnimeById, getAnimeRecommendations } from "@/lib/api";
 import type { Metadata } from "next";
 
@@ -59,10 +60,9 @@ export default async function AnimePage({ params }: Props) {
     { icon: <Layers size={11} />,       label: "Episodes",  value: anime.episodes ? String(anime.episodes) : null },
     { icon: <Clock size={11} />,        label: "Duration",  value: anime.duration?.replace("per ep", "/ ep") },
     { icon: <Hash size={11} />,         label: "Status",    value: anime.status },
-    { icon: <Calendar size={11} />,     label: "Season",    value: anime.season && anime.year ? `${anime.season.charAt(0).toUpperCase() + anime.season.slice(1)} ${anime.year}` : null },
     { icon: <Building2 size={11} />,    label: "Studio",    value: anime.studios?.map(s => s.name).join(", ") || null },
+    { icon: <Tag size={11} />,          label: "Genre",     value: anime.genres?.map(g => g.name).join(" / ") || null },
     { icon: <ShieldCheck size={11} />,  label: "Rating",    value: anime.rating },
-    { icon: <Users size={11} />,        label: "Members",   value: anime.members?.toLocaleString() },
   ].filter(r => r.value) as { icon: React.ReactNode; label: string; value: string }[];
 
   const jsonLd = {
@@ -95,45 +95,47 @@ export default async function AnimePage({ params }: Props) {
           HERO — full cinematic image, no blur
           Info overlaid on the dark left side
       ══════════════════════════════════════ */}
-      <div className="relative h-[480px] md:h-[560px] overflow-hidden">
+      <div className="relative h-[400px] md:h-[560px] overflow-hidden">
 
-        {/* Ambient layer — blurred, saturated, fills the whole hero with colour */}
-        {img && (
-          <Image src={img} alt="" fill priority aria-hidden
-            className="object-cover object-top scale-125"
-            style={{ filter: 'blur(22px) brightness(0.45) saturate(1.4)' }}
-            sizes="100vw"
-            quality={60}
-          />
-        )}
-
-        {/* Sharp layer — right half, cinematic vignette mask on all edges */}
-        {img && (
-          <div
-            className="absolute right-0 top-0 bottom-0 w-[50%]"
-            style={{
-              maskImage: `radial-gradient(ellipse 88% 90% at 65% 36%,
-                black 0%,
-                black 18%,
-                rgba(0,0,0,0.85) 38%,
-                rgba(0,0,0,0.25) 58%,
-                transparent 72%)`,
-              WebkitMaskImage: `radial-gradient(ellipse 88% 90% at 65% 36%,
-                black 0%,
-                black 18%,
-                rgba(0,0,0,0.85) 38%,
-                rgba(0,0,0,0.25) 58%,
-                transparent 72%)`,
-            }}
-          >
-            <Image src={img} alt={title} fill priority
-              className="object-cover"
-              style={{ objectPosition: '50% 33%' }}
-              sizes="50vw"
-              quality={100}
+        <ParallaxBg>
+          {/* Ambient layer — blurred, saturated, fills the whole hero with colour */}
+          {img && (
+            <Image src={img} alt="" fill priority aria-hidden
+              className="object-cover object-top scale-125"
+              style={{ filter: 'blur(22px) brightness(0.45) saturate(1.4)' }}
+              sizes="100vw"
+              quality={60}
             />
-          </div>
-        )}
+          )}
+
+          {/* Sharp layer — right half, cinematic vignette mask on all edges */}
+          {img && (
+            <div
+              className="absolute right-0 top-0 bottom-0 w-[50%]"
+              style={{
+                maskImage: `radial-gradient(ellipse 88% 90% at 65% 36%,
+                  black 0%,
+                  black 18%,
+                  rgba(0,0,0,0.85) 38%,
+                  rgba(0,0,0,0.25) 58%,
+                  transparent 72%)`,
+                WebkitMaskImage: `radial-gradient(ellipse 88% 90% at 65% 36%,
+                  black 0%,
+                  black 18%,
+                  rgba(0,0,0,0.85) 38%,
+                  rgba(0,0,0,0.25) 58%,
+                  transparent 72%)`,
+              }}
+            >
+              <Image src={img} alt={title} fill priority
+                className="object-cover"
+                style={{ objectPosition: '50% 33%' }}
+                sizes="50vw"
+                quality={100}
+              />
+            </div>
+          )}
+        </ParallaxBg>
 
         {/* Left-side text gradient */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#0d0d14] from-25% via-[#0d0d14]/50 via-50% to-transparent" />
@@ -144,12 +146,12 @@ export default async function AnimePage({ params }: Props) {
         <div className="absolute inset-0 flex flex-col justify-between max-w-6xl mx-auto px-4 md:px-6 py-6 w-full left-0 right-0">
 
           {/* Back */}
-          <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition-colors mt-14 w-fit">
+          <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-white/50 hover:text-white transition-colors mt-2 sm:mt-14 w-fit">
             <ChevronLeft size={15} /> Back to home
           </Link>
 
           {/* Bottom info block */}
-          <div className="max-w-xl pb-4">
+          <div className="max-w-2xl sm:pb-4">
 
             {/* Badges */}
             <div className="flex flex-wrap gap-2 mb-3">
@@ -180,8 +182,16 @@ export default async function AnimePage({ params }: Props) {
               <p className="text-white/40 text-sm mb-3">{anime.title}</p>
             )}
 
-            {/* Score row */}
-            <div className="flex flex-wrap items-center gap-4 mb-4">
+            <div className="flex">
+              <Link href={`/watch/${anime.mal_id}`}
+                  className="md:hidden flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors glow">
+                  <Play size={17} fill="white" />
+                  Watch Now
+                </Link>
+            </div>
+
+            {/* Score row — hidden on mobile, shown in poster section instead */}
+            <div className="hidden md:flex flex-wrap items-center gap-4 mb-4">
               {anime.score && (
                 <div className="flex items-center gap-1.5">
                   <Star size={18} className="text-yellow-400" fill="currentColor" />
@@ -205,17 +215,6 @@ export default async function AnimePage({ params }: Props) {
               )}
             </div>
 
-            {/* Genres */}
-            {anime.genres && anime.genres.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-5">
-                {anime.genres.map((g) => (
-                  <Link key={g.mal_id} href={`/browse?genre=${g.mal_id}`}
-                    className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-white/10 text-white/70 hover:bg-violet-500/30 hover:text-violet-200 border border-white/10 transition-all">
-                    {g.name}
-                  </Link>
-                ))}
-              </div>
-            )}
 
           </div>
         </div>
@@ -227,29 +226,83 @@ export default async function AnimePage({ params }: Props) {
       <div className="max-w-6xl mx-auto px-4 md:px-6">
 
         {/* Poster + main content */}
-        <div className="flex flex-col md:flex-row gap-6 -mt-20 md:-mt-24 relative z-10">
+        <div className="flex flex-col md:flex-row gap-6 mt-4 md:-mt-10 relative z-10">
 
           {/* Poster + actions */}
-          <div className="shrink-0 w-36 sm:w-44 md:w-52 flex flex-col gap-3">
-            <div className="relative w-full aspect-[2/3] rounded-xl overflow-hidden shadow-2xl shadow-black/80">
-              {img
-                ? <Image src={img} alt={title} fill className="object-cover" sizes="208px" quality={100} />
-                : <div className="w-full h-full bg-[#1a1a2e] flex items-center justify-center"><Tv size={36} className="text-slate-600" /></div>
-              }
+          <div className="shrink-0 md:w-52">
+            {/* Mobile: row — poster left, stats right. Desktop: column */}
+            <div className="flex flex-row md:flex-col gap-4 md:gap-3">
+              {/* Poster */}
+              <div className="shrink-0 w-40 sm:w-40 md:w-full flex flex-col gap-3">
+                <div className="relative w-full aspect-[2/3] rounded-xl overflow-hidden shadow-2xl shadow-black/80">
+                  {img
+                    ? <Image src={img} alt={title} fill className="object-cover" sizes="208px" quality={100} />
+                    : <div className="w-full h-full bg-[#1a1a2e] flex items-center justify-center"><Tv size={36} className="text-slate-600" /></div>
+                  }
+                </div>
+                {/* Desktop-only buttons */}
+                <Link href={`/watch/${anime.mal_id}`}
+                  className="hidden md:flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors glow">
+                  <Play size={17} fill="white" />
+                  Watch Now
+                </Link>
+                {anime.trailer?.youtube_id && (
+                  <a href={`https://youtube.com/watch?v=${anime.trailer.youtube_id}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="hidden md:flex items-center justify-center gap-2 w-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white font-semibold py-3 rounded-xl text-sm transition-all">
+                    <Play size={17} />
+                    Trailer
+                  </a>
+                )}
+              </div>
+
+              {/* Mobile-only: rating, rank, popularity, genres */}
+              <div className="flex-1 md:hidden flex flex-col gap-3 pt-1">
+                {anime.score && (
+                  <div className="flex items-center gap-1.5">
+                    <Star size={16} className="text-yellow-400" fill="currentColor" />
+                    <span className="text-xl font-black text-white">{anime.score.toFixed(2)}</span>
+                    {anime.scored_by && (
+                      <span className="text-white/40 text-xs">{(anime.scored_by / 1000).toFixed(0)}k</span>
+                    )}
+                  </div>
+                )}
+                {anime.rank && (
+                  <div className="flex items-center gap-1 text-sm text-white/60">
+                    <BarChart2 size={13} />
+                    <span>Rank <span className="text-white font-bold">#{anime.rank}</span></span>
+                  </div>
+                )}
+                {anime.popularity && (
+                  <div className="flex items-center gap-1 text-sm text-white/60">
+                    <Users size={13} />
+                    <span>Popularity <span className="text-white font-bold">#{anime.popularity}</span></span>
+                  </div>
+                )}
+                {anime.genres && anime.genres.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {anime.genres.map((g) => (
+                      <Link key={g.mal_id} href={`/browse?genre=${g.mal_id}`}
+                        className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-white/10 text-white/70 border border-white/10 whitespace-nowrap">
+                        {g.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-            <Link href={`/watch/${anime.mal_id}`}
-              className="relative flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors glow">
-              <Play size={17} fill="white" />
-              Watch Now
-            </Link>
-            {anime.trailer?.youtube_id && (
-              <a href={`https://youtube.com/watch?v=${anime.trailer.youtube_id}`}
-                target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white font-semibold py-3 rounded-xl text-sm transition-all">
-                <Play size={17} />
-                Trailer
-              </a>
-            )}
+
+            {/* Mobile-only Watch Now button */}
+            <div className="md:hidden flex gap-3 mt-1">
+              {anime.trailer?.youtube_id && (
+                <a href={`https://youtube.com/watch?v=${anime.trailer.youtube_id}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 px-5 bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white font-semibold py-3 rounded-xl text-sm transition-all">
+                  <Play size={17} />
+                  Trailer
+                </a>
+              )}
+            </div>
           </div>
 
           {/* Synopsis + Details */}

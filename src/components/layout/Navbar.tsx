@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { Search, Menu, X, Tv, Flame, Star, Calendar, ChevronDown } from "lucide-react";
+import { Search, Menu, X, Tv, Home, Zap, Star, Clock, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import SearchModal from "@/components/layout/SearchModal";
 
@@ -120,15 +120,16 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { href: "/", label: "Home", icon: <Tv size={15} /> },
-    { href: "/browse?filter=airing", label: "Trending", icon: <Flame size={15} /> },
+    { href: "/", label: "Home", icon: <Home size={15} /> },
+    { href: "/browse?filter=airing", label: "Trending", icon: <Zap size={15} /> },
     { href: "/browse?filter=bypopularity", label: "Popular", icon: <Star size={15} /> },
-    { href: "/browse?filter=upcoming", label: "Upcoming", icon: <Calendar size={15} /> },
+    { href: "/browse?filter=upcoming", label: "Upcoming", icon: <Clock size={15} /> },
   ];
 
   return (
     <>
       <nav
+        aria-label="Main navigation"
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
             ? "bg-[#0d0d14]/95 backdrop-blur-md shadow-lg shadow-black/40"
@@ -137,13 +138,8 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-6">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center glow">
-              <Tv size={16} className="text-white" />
-            </div>
-            <span className="text-xl font-bold text-white tracking-tight">
-              Ani<span className="text-violet-400">watsu</span>
-            </span>
+          <Link href="/" aria-label="Aniwatsu home" className="flex items-center gap-2 shrink-0">
+            <span className="text-xl font-bold text-white tracking-tight">Aniwatsu</span>
           </Link>
 
           {/* Desktop links */}
@@ -154,8 +150,8 @@ export default function Navbar() {
                 href={l.href}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                   pathname === l.href
-                    ? "text-violet-400 bg-violet-500/10"
-                    : "text-slate-300 hover:text-white hover:bg-white/5"
+                    ? ""
+                    : "text-slate-300 hover:text-white"
                 }`}
               >
                 {l.icon}
@@ -167,10 +163,12 @@ export default function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setBrowseOpen((p) => !p)}
+                aria-expanded={browseOpen}
+                aria-haspopup="true"
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-colors"
               >
                 Browse
-                <ChevronDown size={14} className={`transition-transform ${browseOpen ? "rotate-180" : ""}`} />
+                <ChevronDown size={14} aria-hidden="true" className={`transition-transform ${browseOpen ? "rotate-180" : ""}`} />
               </button>
               {browseOpen && (
                 <div className="absolute top-full left-0 mt-2 w-44 bg-[#1a1a2e] border border-white/10 rounded-xl shadow-2xl shadow-black/50 overflow-hidden slide-down">
@@ -178,7 +176,7 @@ export default function Navbar() {
                     { label: "By Genre", href: "/browse" },
                     { label: "This Season", href: "/browse?filter=season" },
                     { label: "Top Rated", href: "/browse?filter=favorite" },
-                    { label: "Movies", href: "/browse?type=movie" },
+                    { label: "Movies", href: "/browse?filter=movie" },
                   ].map((item) => (
                     <Link
                       key={item.href}
@@ -197,17 +195,21 @@ export default function Navbar() {
             {/* Search toggle */}
             <button
               onClick={() => setSearchOpen((p) => !p)}
+              aria-label={searchOpen ? "Close search" : "Open search"}
+              aria-expanded={searchOpen}
               className="w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
             >
-              {searchOpen ? <X size={18} /> : <Search size={18} />}
+              {searchOpen ? <X size={18} aria-hidden="true" /> : <Search size={18} aria-hidden="true" />}
             </button>
 
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileOpen((p) => !p)}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileOpen}
               className="md:hidden w-9 h-9 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
             >
-              {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+              {mobileOpen ? <X size={18} aria-hidden="true" /> : <Menu size={18} aria-hidden="true" />}
             </button>
           </div>
         </div>
