@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@source "../**/*.{ts,tsx}";
+@source "../../app/**/*.{ts,tsx}";
+@source "../../components/**/*.{ts,tsx}";
 
 :root {
   --bg-primary: #0d0d14;
@@ -19,9 +22,13 @@
 }
 
 * { box-sizing: border-box; }
+button, a {
+  touch-action: manipulation;
+}
 button {
   cursor: pointer !important;
-  touch-action: manipulation;
+  min-height: 24px;
+  min-width: 24px;
 }
 html { scroll-behavior: smooth; }
 

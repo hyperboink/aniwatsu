@@ -129,6 +129,7 @@ export default function Navbar() {
   return (
     <>
       <nav
+        aria-label="Main navigation"
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
             ? "bg-[#0d0d14]/95 backdrop-blur-md shadow-lg shadow-black/40"
@@ -137,7 +138,7 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center gap-6">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
+          <Link href="/" aria-label="Aniwatsu home" className="flex items-center gap-2 shrink-0">
             <span className="text-xl font-bold text-white tracking-tight">Aniwatsu</span>
           </Link>
 

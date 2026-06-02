@@ -107,9 +107,9 @@ export default function SearchModal({ open, onClose }: Props) {
   ];
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-start justify-center px-4" style={{ paddingTop: "68px" }}>
+    <div role="dialog" aria-modal="true" aria-label="Search anime" className="fixed inset-0 z-[9999] flex items-start justify-center px-4" style={{ paddingTop: "68px" }}>
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/70" onClick={onClose} aria-hidden="true" />
 
       {/* Card */}
       <div className="sm-card relative w-full max-w-2xl rounded-2xl overflow-hidden flex flex-col" style={{ maxHeight: "calc(100vh - 90px)" }}>
@@ -126,17 +126,22 @@ export default function SearchModal({ open, onClose }: Props) {
             onChange={e => { setQ(e.target.value); search(e.target.value); setActiveIdx(-1); }}
             onKeyDown={onKeyDown}
             placeholder='Search for anime ex: "Naruto"'
+            aria-label="Search for anime"
+            role="combobox"
+            aria-expanded={hits.length > 0}
+            aria-autocomplete="list"
             className="flex-1 bg-transparent text-white text-base placeholder-slate-600 focus:outline-none"
             autoComplete="off"
             spellCheck={false}
           />
           {q ? (
             <button onClick={() => { setQ(""); setHits([]); inputRef.current?.focus(); }}
+              aria-label="Clear search"
               className="shrink-0 text-slate-500 hover:text-white transition-colors">
-              <X size={16} />
+              <X size={16} aria-hidden="true" />
             </button>
           ) : (
-            <button onClick={onClose} className="shrink-0 text-[11px] text-slate-600 border border-white/10 rounded-md px-2 py-1 hover:text-slate-400 transition-colors">
+            <button onClick={onClose} aria-label="Close search" className="shrink-0 text-[11px] text-slate-600 border border-white/10 rounded-md px-2 py-1 hover:text-slate-400 transition-colors">
               esc
             </button>
           )}
