@@ -73,7 +73,7 @@ export default function AntiDevTools() {
       "count","countReset","time","timeLog","timeEnd",
     ] as const;
     methods.forEach((m) => {
-      try { (console as Record<string, unknown>)[m] = noop; } catch {}
+      try { (console as unknown as Record<string, unknown>)[m] = noop; } catch {}
     });
 
     // Block DevTools shortcuts
