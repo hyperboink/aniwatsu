@@ -242,7 +242,7 @@ export default async function AnimePage({ params }: Props) {
                 </div>
                 {/* Desktop-only buttons */}
                 <Link href={`/watch/${anime.mal_id}`}
-                  className="hidden md:flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors glow">
+                  className="hidden relative md:flex items-center justify-center gap-2 w-full bg-violet-600 hover:bg-violet-500 text-white font-semibold py-3 rounded-xl text-sm transition-colors glow">
                   <Play size={17} fill="white" />
                   Watch Now
                 </Link>
