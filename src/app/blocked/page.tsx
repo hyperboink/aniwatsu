@@ -1,51 +1,53 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ShieldAlert } from "lucide-react";
 
 export default function BlockedPage() {
   const router = useRouter();
 
   return (
-    <main className="min-h-screen bg-[#0d0d14] flex items-center justify-center px-4">
-      <div className="max-w-md w-full text-center">
+    <main className="min-h-screen bg-[#0d0d14] flex flex-col items-center justify-center px-6 text-center -mt-8">
+
+
+      <div className="relative z-10 flex flex-col items-center">
+
         {/* Icon */}
-        <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-            <ShieldAlert size={40} className="text-red-400" />
-          </div>
+        <div className="w-14 h-14 rounded-2xl border border-white/8 bg-white/[0.03] flex items-center justify-center mb-10">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/30">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
         </div>
+
+        {/* Eyebrow */}
+        <p className="text-[11px] font-medium tracking-widest uppercase text-violet-400/60 mb-4">
+          Aniwatsu Security
+        </p>
 
         {/* Heading */}
-        <h1 className="text-2xl font-bold text-white mb-3">
-          Developer Tools Detected
+        <h1 className="text-2xl font-semibold text-white mb-4 tracking-tight">
+          Developer tools detected
         </h1>
 
-        {/* Message */}
-        <p className="text-slate-400 text-sm leading-relaxed mb-2">
-          It looks like you have your browser&apos;s developer tools open.
-        </p>
-        <p className="text-slate-400 text-sm leading-relaxed mb-6">
-          For the security and protection of our content, this site is not accessible while developer tools are active. Please close your developer tools and return to continue enjoying Aniwatsu.
-        </p>
+        {/* Divider */}
+        <div className="w-8 h-px bg-white/10 mb-5" />
 
-        {/* Steps */}
-        <div className="bg-[#13131f] border border-white/5 rounded-xl p-4 mb-8 text-left space-y-2">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">How to close developer tools</p>
-          <p className="text-sm text-slate-300">• Press <kbd className="bg-white/10 text-white px-1.5 py-0.5 rounded text-xs font-mono">F12</kbd> to toggle DevTools off</p>
-          <p className="text-sm text-slate-300">• Or press <kbd className="bg-white/10 text-white px-1.5 py-0.5 rounded text-xs font-mono">Ctrl + Shift + I</kbd> to close the panel</p>
-          <p className="text-sm text-slate-300">• Then click the button below to go back</p>
-        </div>
+        {/* Description */}
+        <p className="text-slate-500 text-sm leading-7 max-w-sm mb-12">
+          Close your developer tools to continue.
+        </p>
 
         {/* Button */}
-        <div className="flex justify-center">
-          <button
-            onClick={() => router.push("/")}
-            className="flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-500 text-white font-semibold px-6 py-3 rounded-xl text-sm transition-colors"
-          >
-            ← Go Back
-          </button>
-        </div>
+        <button
+          onClick={() => router.push("/")}
+          className="group flex items-center gap-2.5 bg-white/5 hover:bg-white/8 border border-white/8 hover:border-white/15 text-white/70 hover:text-white px-7 py-3 rounded-xl text-sm font-medium transition-all duration-200"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-50 group-hover:opacity-100 transition-opacity -translate-x-0.5 group-hover:-translate-x-1 transition-transform duration-200">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+          Back to home
+        </button>
+
       </div>
     </main>
   );
