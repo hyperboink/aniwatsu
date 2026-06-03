@@ -48,11 +48,12 @@ export default function AntiDevTools() {
     }
     rafId = requestAnimationFrame(imageTrapLoop);
 
-    // Debugger timing (Sources panel paused)
+    // Debugger timing — uses Function constructor to survive production minification
+    // (direct `debugger` statements get stripped by SWC/Terser in prod builds)
+    const _dbg = new Function("debugger");
     function checkDebuggerTiming() {
       const start = performance.now();
-      // eslint-disable-next-line no-debugger
-      debugger;
+      try { _dbg(); } catch {}
       if (performance.now() - start > 100) lockdown();
     }
 
