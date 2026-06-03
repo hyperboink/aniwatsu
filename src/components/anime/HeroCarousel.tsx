@@ -69,11 +69,11 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
         >
           {/* Ambient layer — blurred, saturated */}
           {img && (
-            <Image src={img} alt="" fill priority aria-hidden="true"
+            <Image src={img} alt="" fill priority fetchPriority="high" aria-hidden="true"
               className="object-cover object-top scale-125"
               style={{ filter: 'blur(22px) brightness(0.45) saturate(1.4)' }}
               sizes="100vw"
-              quality={60}
+              quality={50}
             />
           )}
           {/* Sharp layer — desktop only, skipped on mobile to save bandwidth */}
@@ -106,8 +106,7 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
           {/* Overlays */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#0d0d14] from-25% via-[#0d0d14]/50 via-50% to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d14] via-[#0d0d14]/10 to-black/30" />
-          {/* Particles — desktop only, Three.js is too heavy for mobile */}
-          <div className="hidden md:block"><HeroParticles /></div>
+          <HeroParticles />
         </div>
 
         {/* Content */}

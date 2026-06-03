@@ -14,6 +14,9 @@ export default function HeroParticles() {
     const el = mountRef.current;
     if (!el) return;
 
+    // Skip Three.js entirely on mobile — too heavy for mobile CPUs
+    if (window.innerWidth < 768) return;
+
     let renderer: import("three").WebGLRenderer;
     let animId: number;
 
