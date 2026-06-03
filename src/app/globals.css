@@ -22,11 +22,9 @@
 }
 
 * { box-sizing: border-box; }
-button, a {
-  touch-action: manipulation;
-}
 button {
   cursor: pointer !important;
+  touch-action: manipulation;
   min-height: 24px;
   min-width: 24px;
 }
@@ -39,9 +37,9 @@ body {
   min-height: 100vh;
 }
 
-/* overflow-x on html instead of body — avoids iOS Safari bug where
-   overflow on body breaks touch events on position:fixed elements */
-html { overflow-x: hidden; }
+/* overflow-x: clip instead of hidden — clips without creating a scroll container,
+   avoids iOS Safari scroll jank while still preventing horizontal overflow */
+html { overflow-x: clip; }
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-primary); }
