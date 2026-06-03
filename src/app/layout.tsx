@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import AntiDevTools from "@/components/security/AntiDevTools";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans", display: "swap" });
 
@@ -38,10 +39,14 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${geist.variable}`}>
+      <head>
+        <link rel="preconnect" href="https://cdn.myanimelist.net" />
+      </head>
       <body className="min-h-screen flex flex-col bg-[#0d0d14]">
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:px-4 focus:py-2 focus:bg-violet-600 focus:text-white focus:rounded-lg focus:font-semibold">
           Skip to content
         </a>
+        {process.env.NEXT_PUBLIC_SECURITY_ENABLED === "true" && <AntiDevTools />}
         <Navbar />
         <div id="main-content" className="flex-1 pt-16">{children}</div>
         <Footer />
