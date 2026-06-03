@@ -18,7 +18,7 @@ export default function AnimeGrid({ anime, showRank }: Props) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
       {unique.map((a, i) => (
-        <AnimeCard key={a.mal_id} anime={a} rank={showRank ? i + 1 : undefined} />
+        <AnimeCard key={a.mal_id} anime={a} rank={showRank ? i + 1 : undefined} priority={i < 2} />
       ))}
     </div>
   );

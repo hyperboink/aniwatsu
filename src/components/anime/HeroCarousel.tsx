@@ -69,13 +69,14 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
         >
           {/* Ambient layer — blurred, saturated */}
           {img && (
-            <Image src={img} alt="" fill priority aria-hidden
+            <Image src={img} alt="" fill priority aria-hidden="true"
               className="object-cover object-top scale-125"
               style={{ filter: 'blur(22px) brightness(0.45) saturate(1.4)' }}
               sizes="100vw"
+              quality={60}
             />
           )}
-          {/* Sharp layer — right half, cinematic vignette mask */}
+          {/* Sharp layer — desktop only, skipped on mobile to save bandwidth */}
           {img && (
             <div
               className="absolute right-0 top-0 bottom-0 w-[50%]"
@@ -94,18 +95,19 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
                   transparent 72%)`,
               }}
             >
-              <Image src={img} alt={title} fill priority
+              <Image src={img} alt={title} fill
                 className="object-cover"
                 style={{ objectPosition: '50% 33%' }}
                 sizes="50vw"
-                quality={100}
+                quality={85}
               />
             </div>
           )}
           {/* Overlays */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#0d0d14] from-25% via-[#0d0d14]/50 via-50% to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d14] via-[#0d0d14]/10 to-black/30" />
-          <HeroParticles />
+          {/* Particles — desktop only, Three.js is too heavy for mobile */}
+          <div className="hidden md:block"><HeroParticles /></div>
         </div>
 
         {/* Content */}
@@ -200,7 +202,7 @@ export default function HeroCarousel({ items }: { items: Anime[] }) {
         </button>
 
         {/* Dots */}
-        <div role="tablist" aria-label="Carousel slides" className="absolute right-6 z-10 flex items-center gap-1" style={{ bottom: "70px", transform: "translateY(calc(-1 * var(--shrink-offset, 0px)))" }}>
+        <div role="tablist" aria-label="Carousel slides" className="absolute left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-6 z-10 flex items-center gap-1" style={{ bottom: "70px", transform: "translateY(calc(-1 * var(--shrink-offset, 0px)))" }}>
           {items.map((_, i) => (
             <button
               key={i}

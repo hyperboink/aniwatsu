@@ -6,9 +6,10 @@ import type { Anime } from "@/lib/api";
 type Props = {
   anime: Anime;
   rank?: number;
+  priority?: boolean;
 };
 
-export default function AnimeCard({ anime, rank }: Props) {
+export default function AnimeCard({ anime, rank, priority = false }: Props) {
   const title = anime.title_english || anime.title;
   const img = anime.images?.webp?.large_image_url ?? anime.images?.webp?.image_url
            ?? anime.images?.jpg?.large_image_url ?? anime.images?.jpg?.image_url;
@@ -24,9 +25,11 @@ export default function AnimeCard({ anime, rank }: Props) {
               src={img}
               alt={title}
               fill
+              loading={priority ? "eager" : "lazy"}
+              priority={priority}
               className="object-cover group-hover:scale-105 transition-transform duration-300"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 200px"
-              quality={90}
+              quality={75}
             />
           ) : (
             <div className="w-full h-full bg-[#22223a] flex items-center justify-center">
