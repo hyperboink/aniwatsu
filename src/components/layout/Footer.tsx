@@ -16,7 +16,7 @@ export default function Footer() {
                 Ani<span className="text-violet-400">watsu</span>
               </span>
             </Link>
-            <p className="text-slate-500 text-sm max-w-xs leading-relaxed">
+            <p className="text-slate-400 text-sm max-w-xs leading-relaxed">
               Your go-to destination for streaming the latest anime series and movies. Updated daily with new episodes.
             </p>
           </div>
@@ -32,7 +32,7 @@ export default function Footer() {
                 { label: "Upcoming", href: "/browse?filter=upcoming" },
               ].map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-slate-500 hover:text-violet-400 transition-colors">
+                  <Link href={l.href} className="text-sm text-slate-400 hover:text-violet-400 transition-colors">
                     {l.label}
                   </Link>
                 </li>
@@ -51,7 +51,7 @@ export default function Footer() {
                 { label: "Sci-Fi", href: "/browse?genre=24" },
               ].map((l) => (
                 <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-slate-500 hover:text-violet-400 transition-colors">
+                  <Link href={l.href} className="text-sm text-slate-400 hover:text-violet-400 transition-colors">
                     {l.label}
                   </Link>
                 </li>
@@ -61,7 +61,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-slate-400">
             © 2025 Aniwatsu
           </p>
         </div>
