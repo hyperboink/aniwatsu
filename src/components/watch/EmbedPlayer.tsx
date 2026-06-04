@@ -32,7 +32,6 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
   const [fetched, setFetched] = useState(false);
   const [isDub, setIsDub] = usePersist<boolean>("player_isDub", false);
   const [savedServer, setSavedServer] = usePersist<string | null>("player_server", null);
-  const [dubAvailable, setDubAvailable] = useState(true); // optimistic — hide only if confirmed unavailable
   const [userClicked, setUserClicked] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(true); // only on very first load
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -52,22 +51,6 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
   const activeUrl = servers[activeIdx]?.url ?? null;
   const noServers = fetched && servers.length === 0;
 
-  // Check dub availability in background on episode/title change
-  useEffect(() => {
-    setDubAvailable(false);
-    if (!isDub) setIsDub(false); // reset to sub if dub becomes unavailable
-    const params = new URLSearchParams({ title, ep: String(episode), dub: "true" });
-    if (titleEn) params.set("titleEn", titleEn);
-    fetch(`/api/embed?${params.toString()}`)
-      .then((r) => r.json())
-      .then((data) => {
-        const available = !!data.urls?.length;
-        setDubAvailable(available);
-        if (!available && isDub) setIsDub(false); // fall back to sub if dub gone
-      })
-      .catch(() => {}); // on error keep optimistic state
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [malId, episode, title, titleEn]);
 
   // Build iframe src — append saved timestamp if available
   const buildSrc = (url: string) => {
@@ -304,7 +287,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
       <div className="flex items-center gap-2 mt-4 mb-1 flex-wrap">
         {/* Sub / Dub toggle — only show Dub if available */}
         <div className="flex items-center bg-[#1a1a2e] border border-white/10 rounded-lg overflow-hidden mr-1">
-          {(["Sub", ...(dubAvailable ? ["Dub"] : [])] as string[]).map((opt) => {
+          {(["Sub", "Dub"] as string[]).map((opt) => {
             const active = opt === "Dub" ? isDub : !isDub;
             return (
               <button
