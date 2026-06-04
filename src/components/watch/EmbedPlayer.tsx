@@ -32,7 +32,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
   const [fetched, setFetched] = useState(false);
   const [isDub, setIsDub] = usePersist<boolean>("player_isDub", false);
   const [savedServer, setSavedServer] = usePersist<string | null>("player_server", null);
-  const [dubAvailable, setDubAvailable] = useState(false);
+  const [dubAvailable, setDubAvailable] = useState(true); // optimistic — hide only if confirmed unavailable
   const [userClicked, setUserClicked] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(true); // only on very first load
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -65,7 +65,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
         setDubAvailable(available);
         if (!available && isDub) setIsDub(false); // fall back to sub if dub gone
       })
-      .catch(() => setDubAvailable(false));
+      .catch(() => {}); // on error keep optimistic state
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [malId, episode, title, titleEn]);
 
