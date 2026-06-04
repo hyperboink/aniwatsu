@@ -30,7 +30,8 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
   const pathname = usePathname();
   const title = anime.title_english || anime.title;
 
-  const [lightMode,  setLightMode]  = usePersist("ctrl_lightMode",  false);
+  const [lightMode, setLightMode] = usePersist("ctrl_lightMode", false);
+  const [reloading, setReloading] = useState(false);
 
   // Light mode — dim everything except the player
   useEffect(() => {
@@ -111,10 +112,17 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
               {title}
             </Link>
             <button
-              onClick={() => embedRef.current?.reload()}
-              className="flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-[#1a1a2e] text-slate-500 border border-white/10 hover:text-white hover:border-white/30 transition-all"
+              disabled={reloading}
+              onClick={() => {
+                setReloading(true);
+                embedRef.current?.reload();
+                setTimeout(() => setReloading(false), 2000);
+              }}
+              className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-[#1a1a2e] border border-white/10 transition-all ${
+                reloading ? "text-slate-600 cursor-default" : "text-slate-500 hover:text-white hover:border-white/30"
+              }`}
             >
-              <RefreshCw size={11} /> Reload
+              <RefreshCw size={11} className={reloading ? "animate-spin" : ""} /> Reload
             </button>
           </div>
 
