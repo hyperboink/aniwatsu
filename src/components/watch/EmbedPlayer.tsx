@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
+import { usePersist } from "@/hooks/usePersist";
 import { Server, Play, Sun, Maximize2 } from "lucide-react";
 import Image from "next/image";
 
@@ -15,6 +16,7 @@ type Props = {
   expanded?: boolean;
   onLightToggle?: () => void;
   onExpand?: () => void;
+  onFetching?: (fetching: boolean) => void;
 };
 
 export type EmbedPlayerHandle = { reload: () => void };
@@ -23,11 +25,14 @@ type Server_ = { label: string; url: string };
 
 const storageKey = (malId: number, ep: number) => `watch_${malId}_ep${ep}`;
 
-const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ malId, animeKaiBaseUrl, episode, title, titleEn, posterUrl, lightMode, expanded, onLightToggle, onExpand }: Props, ref) {
+const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ malId, animeKaiBaseUrl, episode, title, titleEn, posterUrl, lightMode, expanded, onLightToggle, onExpand, onFetching }: Props, ref) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [servers, setServers] = useState<Server_[]>([]);
   const [fetching, setFetching] = useState(false);
   const [fetched, setFetched] = useState(false);
+  const [isDub, setIsDub] = usePersist<boolean>("player_isDub", false);
+  const [savedServer, setSavedServer] = usePersist<string | null>("player_server", null);
+  const [dubAvailable, setDubAvailable] = useState(false);
   const [userClicked, setUserClicked] = useState(false);
   const [overlayVisible, setOverlayVisible] = useState(true); // only on very first load
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -36,10 +41,33 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
   const [fetchKey, setFetchKey] = useState(0);
   const hasEverPlayed = useRef(false);
   const preferredServer = useRef<string | null>(null);
+  // Sync savedServer into preferredServer ref on mount
+  useEffect(() => {
+    if (savedServer) preferredServer.current = savedServer;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const prevEpisodeRef = useRef(episode);
 
   const activeUrl = servers[activeIdx]?.url ?? null;
   const noServers = fetched && servers.length === 0;
+
+  // Check dub availability in background on episode/title change
+  useEffect(() => {
+    setDubAvailable(false);
+    if (!isDub) setIsDub(false); // reset to sub if dub becomes unavailable
+    const params = new URLSearchParams({ title, ep: String(episode), dub: "true" });
+    if (titleEn) params.set("titleEn", titleEn);
+    fetch(`/api/embed?${params.toString()}`)
+      .then((r) => r.json())
+      .then((data) => {
+        const available = !!data.urls?.length;
+        setDubAvailable(available);
+        if (!available && isDub) setIsDub(false); // fall back to sub if dub gone
+      })
+      .catch(() => setDubAvailable(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [malId, episode, title, titleEn]);
 
   // Build iframe src — append saved timestamp if available
   const buildSrc = (url: string) => {
@@ -50,27 +78,39 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
     return `${url}${separator}t=${t}#t=${t}`;
   };
 
-  // Fetch servers on mount / episode change
+  // Fetch servers on mount / episode / dub change
   useEffect(() => {
     let cancelled = false; // cancel stale fetches when effect re-runs
 
-    setActiveIdx(0);
-    setServers([]);
     setFetching(true);
+    onFetching?.(true);
     setFetched(false);
-    if (!hasEverPlayed.current) {
-      setUserClicked(false);
-      setOverlayVisible(true);
-    } else {
-      setUserClicked(false);
-      setOverlayVisible(false);
-    }
-    setIframeLoaded(false);
     setShowHint(false);
     if (hintTimer.current) clearTimeout(hintTimer.current);
 
+    const episodeChanged = prevEpisodeRef.current !== episode;
+    prevEpisodeRef.current = episode;
+
+    if (!hasEverPlayed.current) {
+      // First ever load — show overlay
+      setActiveIdx(0);
+      setServers([]);
+      setUserClicked(false);
+      setOverlayVisible(true);
+      setIframeLoaded(false);
+    } else if (episodeChanged) {
+      // Episode changed — reset player fully
+      setActiveIdx(0);
+      setServers([]);
+      setUserClicked(false);
+      setOverlayVisible(false);
+      setIframeLoaded(false);
+    }
+    // Audio mode switch — keep existing servers/iframe visible until new ones arrive
+
     const params = new URLSearchParams({ title, ep: String(episode) });
     if (titleEn) params.set("titleEn", titleEn);
+    if (isDub) params.set("dub", "true");
 
     const gogoFetch = fetch(`/api/embed?${params.toString()}`)
       .then((r) => r.json())
@@ -120,10 +160,10 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
         setUserClicked(true);
         hasEverPlayed.current = true;
       })
-      .finally(() => { if (!cancelled) { setFetching(false); setFetched(true); } });
+      .finally(() => { if (!cancelled) { setFetching(false); onFetching?.(false); setFetched(true); } });
 
     return () => { cancelled = true; };
-  }, [malId, episode, title, titleEn, fetchKey]);
+  }, [malId, episode, title, titleEn, fetchKey, isDub]);
 
   // Listen for time updates from the iframe (megacloud / gogoanime players)
   useEffect(() => {
@@ -146,8 +186,21 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
 
   const handleClick = () => setUserClicked(true);
 
+  const audioDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const switchAudio = (dub: boolean) => {
+    if (dub === isDub) return; // already active
+    if (audioDebounce.current) clearTimeout(audioDebounce.current);
+    audioDebounce.current = setTimeout(() => {
+      setIsDub(dub);
+      setActiveIdx(0);
+      setIframeLoaded(false);
+    }, 300);
+  };
+
   const switchServer = (idx: number) => {
-    preferredServer.current = servers[idx]?.label ?? null;
+    const label = servers[idx]?.label ?? null;
+    preferredServer.current = label;
+    setSavedServer(label);
     setActiveIdx(idx);
     setIframeLoaded(false);
     setShowHint(false);
@@ -161,7 +214,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
     setFetching(false);
     setServers([]);
     setActiveIdx(0);
-    setFetchKey(k => k + 1); // re-trigger server fetch
+    setFetchKey(k => k + 1);
   };
 
   useImperativeHandle(ref, () => ({ reload }));
@@ -249,6 +302,26 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
 
       {/* Unified toolbar: servers left, controls right */}
       <div className="flex items-center gap-2 mt-4 mb-1 flex-wrap">
+        {/* Sub / Dub toggle — only show Dub if available */}
+        <div className="flex items-center bg-[#1a1a2e] border border-white/10 rounded-lg overflow-hidden mr-1">
+          {(["Sub", ...(dubAvailable ? ["Dub"] : [])] as string[]).map((opt) => {
+            const active = opt === "Dub" ? isDub : !isDub;
+            return (
+              <button
+                key={opt}
+                onClick={() => switchAudio(opt === "Dub")}
+                disabled={active}
+                className={`px-3 py-1 text-xs font-semibold transition-all ${
+                  active
+                    ? "bg-violet-600 text-white cursor-default"
+                    : "text-slate-500 hover:text-slate-300 cursor-pointer"
+                }`}
+              >
+                {opt}
+              </button>
+            );
+          })}
+        </div>
         <span className={`text-xs flex items-center gap-1 ${lightMode ? "text-white/20" : "text-slate-500"}`}>
           <Server size={11} /> Server:
         </span>
@@ -256,13 +329,14 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
           <button
             key={i}
             onClick={() => switchServer(i)}
+            disabled={activeIdx === i}
             className={`px-3 py-1 rounded-lg text-xs font-medium border transition-all ${
               lightMode
                 ? activeIdx === i
-                  ? "bg-white/10 text-white/40 border-white/15"
+                  ? "bg-white/10 text-white/40 border-white/15 cursor-default"
                   : "bg-white/5 text-white/20 border-white/8"
                 : activeIdx === i
-                  ? "bg-violet-600 text-white border-violet-600"
+                  ? "bg-violet-600 text-white border-violet-600 cursor-default"
                   : "bg-[#1a1a2e] text-slate-400 border-white/10 hover:border-violet-500/40 hover:text-violet-300"
             }`}
           >

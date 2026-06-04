@@ -58,7 +58,7 @@ function scoreMatch(gogoTitle: string, query: string): number {
   const b = clean(query);
   if (a === b) return 100;
   if (a.startsWith(b) || b.startsWith(a)) return 85;
-  const dubPenalty = a.includes("dub") ? -30 : 0;
+  const dubPenalty = 0; // penalty applied externally based on dub param
   const wordsA = new Set(a.split(" "));
   const wordsB = b.split(" ");
   const overlap = wordsB.filter((w) => w.length > 2 && wordsA.has(w)).length;
@@ -114,6 +114,7 @@ export async function GET(req: NextRequest) {
   const title = req.nextUrl.searchParams.get("title");
   const titleEn = req.nextUrl.searchParams.get("titleEn");
   const epParam = req.nextUrl.searchParams.get("ep");
+  const dub = req.nextUrl.searchParams.get("dub") === "true";
 
   if (!title || !epParam) {
     return NextResponse.json({ error: "Missing title or ep" }, { status: 400 });
@@ -122,8 +123,12 @@ export async function GET(req: NextRequest) {
   const episode = Math.max(1, Number(epParam) || 1);
   const { queries, slugs } = buildVariants(titleEn, title);
 
+  // For dub: try <slug>-dub variants first
+  const dubSlugs = slugs.map((s) => `${s}-dub`);
+  const orderedSlugs = dub ? [...dubSlugs, ...slugs] : slugs;
+
   // 1. Try direct slug probes first (fast, no search round-trip)
-  for (const slug of slugs) {
+  for (const slug of orderedSlugs) {
     try {
       const urls = await probeSlug(slug, episode);
       if (urls.length) return NextResponse.json({ urls, url: urls[0], slug, matched: slug });
@@ -133,11 +138,14 @@ export async function GET(req: NextRequest) {
   // 2. Fall back to full-text search
   for (const query of queries) {
     try {
-      const results = await searchGogo(query);
+      const results = await searchGogo(dub ? `${query} dub` : query);
       if (!results.length) continue;
 
       const scored = results
-        .map((r) => ({ ...r, score: scoreMatch(r.title, query) }))
+        .map((r) => ({
+          ...r,
+          score: scoreMatch(r.title, query) + (dub && r.title.toLowerCase().includes("dub") ? 30 : 0),
+        }))
         .filter((r) => r.score > 10)
         .sort((a, b) => b.score - a.score);
 
