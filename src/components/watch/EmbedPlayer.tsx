@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
 import { usePersist } from "@/hooks/usePersist";
-import { Server, Play, Sun, Maximize2 } from "lucide-react";
+import { Server, Play, Sun, Maximize2, RefreshCw } from "lucide-react";
 import Image from "next/image";
 
 type Props = {
@@ -17,6 +17,7 @@ type Props = {
   onLightToggle?: () => void;
   onExpand?: () => void;
   onFetching?: (fetching: boolean) => void;
+  onReload?: () => void;
 };
 
 export type EmbedPlayerHandle = { reload: () => void };
@@ -25,7 +26,7 @@ type Server_ = { label: string; url: string };
 
 const storageKey = (malId: number, ep: number) => `watch_${malId}_ep${ep}`;
 
-const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ malId, animeKaiBaseUrl, episode, title, titleEn, posterUrl, lightMode, expanded, onLightToggle, onExpand, onFetching }: Props, ref) {
+const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ malId, animeKaiBaseUrl, episode, title, titleEn, posterUrl, lightMode, expanded, onLightToggle, onExpand, onFetching, onReload }: Props, ref) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [servers, setServers] = useState<Server_[]>([]);
   const [fetching, setFetching] = useState(false);
@@ -210,6 +211,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
       {/* Player */}
       <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden">
 
+
         {/* Not available */}
         {noServers && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d0d14] gap-5 p-6 text-center z-10">
@@ -355,7 +357,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
                   : "bg-[#1a1a2e] text-slate-500 border-white/8 hover:text-slate-300 hover:border-white/20"
               }`}
             >
-              <Maximize2 size={13} /> {expanded ? "Collapse" : "Expand"}
+              <Maximize2 size={13} /> {expanded ? "Exit expand" : "Expand"}
             </button>
           )}
         </div>

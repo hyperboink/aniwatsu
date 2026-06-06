@@ -32,12 +32,34 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
 
   const [lightMode, setLightMode] = usePersist("ctrl_lightMode", false);
   const [reloading, setReloading] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [showExpandedControls, setShowExpandedControls] = useState(true);
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const arrowsHovered = useRef(false);
 
   // Light mode — dim everything except the player
   useEffect(() => {
     document.body.classList.toggle("light-mode", lightMode);
     return () => document.body.classList.remove("light-mode");
   }, [lightMode]);
+
+  // Hide prev/next arrows after 3s of no cursor movement in expanded mode
+  useEffect(() => {
+    if (!expanded) { setShowExpandedControls(true); return; }
+    const onMove = () => {
+      setShowExpandedControls(true);
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+      if (!arrowsHovered.current) {
+        idleTimer.current = setTimeout(() => setShowExpandedControls(false), 1000);
+      }
+    };
+    window.addEventListener("mousemove", onMove);
+    idleTimer.current = setTimeout(() => setShowExpandedControls(false), 1000);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+    };
+  }, [expanded]);
 
   // Sync episode to URL so refresh restores it
   useEffect(() => {
@@ -68,8 +90,6 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
 
   const goNext = () => { if (currentEp < totalEpisodes) setCurrentEp((n) => n + 1); };
   const goPrev = () => { if (currentEp > 1) setCurrentEp((n) => n - 1); };
-
-  const [expanded, setExpanded] = useState(false);
 
   const expand = () => setExpanded(e => !e);
 
@@ -132,8 +152,47 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
           <div
             ref={playerRef}
             className={`watch-player-area ${expanded ? "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] shadow-2xl shadow-black/80" : "relative"}`}
-            style={{ zIndex: expanded ? 9999 : lightMode ? 9999 : undefined }}
+            style={{ zIndex: expanded ? 9999 : lightMode ? 9999 : undefined, overflow: expanded ? "visible" : undefined }}
           >
+            {/* Expanded: reload top-right above video */}
+            {expanded && (
+              <div className="absolute -top-9 right-0 flex items-center gap-2" style={{ zIndex: 10000 }}>
+                <button
+                  disabled={reloading}
+                  onClick={() => { setReloading(true); embedRef.current?.reload(); setTimeout(() => setReloading(false), 2000); }}
+                  className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs bg-[#1a1a2e] border border-white/10 transition-all ${reloading ? "text-slate-600 cursor-default" : "text-slate-500 hover:text-white hover:border-white/30"}`}
+                >
+                  <RefreshCw size={11} className={reloading ? "animate-spin" : ""} /> Reload
+                </button>
+              </div>
+            )}
+
+            {/* Expanded: Prev arrow left, Next arrow right — centered on video height */}
+            {expanded && (
+              <>
+                <button
+                  onClick={goPrev}
+                  disabled={currentEp <= 1}
+                  onMouseEnter={() => { arrowsHovered.current = true; setShowExpandedControls(true); if (idleTimer.current) clearTimeout(idleTimer.current); }}
+                  onMouseLeave={() => { arrowsHovered.current = false; idleTimer.current = setTimeout(() => setShowExpandedControls(false), 1000); }}
+                  className="absolute top-1/2 -translate-y-1/2 -left-14 w-10 h-10 flex items-center justify-center rounded-full bg-[#1a1a2e] border border-white/10 text-slate-300 hover:bg-violet-600/20 hover:border-violet-500/30 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  style={{ zIndex: 10000, opacity: showExpandedControls ? 1 : 0, transition: "opacity 0.4s ease" }}
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  onClick={goNext}
+                  disabled={currentEp >= totalEpisodes}
+                  onMouseEnter={() => { arrowsHovered.current = true; setShowExpandedControls(true); if (idleTimer.current) clearTimeout(idleTimer.current); }}
+                  onMouseLeave={() => { arrowsHovered.current = false; idleTimer.current = setTimeout(() => setShowExpandedControls(false), 1000); }}
+                  className="absolute top-1/2 -translate-y-1/2 -right-14 w-10 h-10 flex items-center justify-center rounded-full bg-[#1a1a2e] border border-white/10 text-slate-300 hover:bg-violet-600/20 hover:border-violet-500/30 hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  style={{ zIndex: 10000, opacity: showExpandedControls ? 1 : 0, transition: "opacity 0.4s ease" }}
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </>
+            )}
+
             <EmbedPlayer
               ref={embedRef}
               malId={anime.mal_id}
@@ -146,6 +205,11 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
               expanded={expanded}
               onLightToggle={() => setLightMode(!lightMode)}
               onExpand={expand}
+              onReload={() => {
+                setReloading(true);
+                embedRef.current?.reload();
+                setTimeout(() => setReloading(false), 2000);
+              }}
             />
           </div>{/* end watch-player-area */}
 
