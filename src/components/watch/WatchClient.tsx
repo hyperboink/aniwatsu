@@ -122,7 +122,7 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
           )}
 
           {/* Reload — top right above video */}
-          <div className="flex justify-between mb-4 relative" style={{ zIndex: lightMode ? 9999 : undefined }}>
+          {!expanded && <div className="flex justify-between mb-4 relative" style={{ zIndex: lightMode ? 9999 : undefined }}>
             {/* Back breadcrumb */}
             <Link
               href={`/anime/${anime.mal_id}`}
@@ -146,7 +146,7 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
             >
               <RefreshCw size={11} className={reloading ? "animate-spin" : ""} /> Reload
             </button>
-          </div>
+          </div>}
 
           {/* Placeholder keeps layout space when expanded */}
           {expanded && <div className="aspect-video w-full rounded-xl bg-black/20 mb-2" />}
@@ -184,8 +184,8 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
                   disabled={currentEp <= 1}
                   onMouseEnter={() => { arrowsHovered.current = true; setShowExpandedControls(true); if (idleTimer.current) clearTimeout(idleTimer.current); }}
                   onMouseLeave={() => { arrowsHovered.current = false; idleTimer.current = setTimeout(() => setShowExpandedControls(false), 1000); }}
-                  className={`absolute top-1/2 -translate-y-1/2 -left-14 w-10 h-10 flex items-center justify-center rounded-full border transition-all disabled:opacity-30 disabled:cursor-not-allowed ${lightMode ? "bg-white/5 border-white/8 text-white/20" : "bg-[#1a1a2e] border-white/10 text-slate-300 hover:bg-violet-600/20 hover:border-violet-500/30 hover:text-white"}`}
-                  style={{ zIndex: 10000, opacity: showExpandedControls ? 1 : 0, transition: "opacity 0.4s ease", lineHeight: 0 }}
+                  className={`absolute top-1/2 -translate-y-1/2 -left-14 w-10 h-10 inline-flex items-center justify-center rounded-full border transition-all disabled:opacity-30 disabled:cursor-not-allowed ${lightMode ? "bg-white/5 border-white/8 text-white/20" : "bg-[#1a1a2e] border-white/10 text-slate-400 hover:bg-white/8 hover:border-white/20 hover:text-slate-200"}`}
+                  style={{ zIndex: 10000, opacity: showExpandedControls ? 1 : 0, transition: "opacity 0.4s ease" }}
                 >
                   <ChevronLeft size={20} />
                 </button>
@@ -194,8 +194,8 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
                   disabled={currentEp >= totalEpisodes}
                   onMouseEnter={() => { arrowsHovered.current = true; setShowExpandedControls(true); if (idleTimer.current) clearTimeout(idleTimer.current); }}
                   onMouseLeave={() => { arrowsHovered.current = false; idleTimer.current = setTimeout(() => setShowExpandedControls(false), 1000); }}
-                  className={`absolute top-1/2 -translate-y-1/2 -right-14 w-10 h-10 flex items-center justify-center rounded-full border transition-all disabled:opacity-30 disabled:cursor-not-allowed ${lightMode ? "bg-white/5 border-white/8 text-white/20" : "bg-[#1a1a2e] border-white/10 text-slate-300 hover:bg-violet-600/20 hover:border-violet-500/30 hover:text-white"}`}
-                  style={{ zIndex: 10000, opacity: showExpandedControls ? 1 : 0, transition: "opacity 0.4s ease", lineHeight: 0 }}
+                  className={`absolute top-1/2 -translate-y-1/2 -right-14 w-10 h-10 inline-flex items-center justify-center rounded-full border transition-all disabled:opacity-30 disabled:cursor-not-allowed ${lightMode ? "bg-white/5 border-white/8 text-white/20" : "bg-[#1a1a2e] border-white/10 text-slate-400 hover:bg-white/8 hover:border-white/20 hover:text-slate-200"}`}
+                  style={{ zIndex: 10000, opacity: showExpandedControls ? 1 : 0, transition: "opacity 0.4s ease" }}
                 >
                   <ChevronRight size={20} />
                 </button>
