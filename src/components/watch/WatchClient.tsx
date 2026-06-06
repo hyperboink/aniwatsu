@@ -158,7 +158,7 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
           >
             {/* Expanded: episode label top-left + reload top-right — above video */}
             {expanded && (
-              <div className="absolute -top-9 left-0 flex items-center" style={{ zIndex: 10000, opacity: showExpandedControls ? 1 : 0, transition: "opacity 0.4s ease" }}>
+              <div className="absolute -top-9 left-0 flex items-center" style={{ zIndex: 10000, opacity: showExpandedControls ? 1 : 0, transition: "opacity 0.4s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease" }}>
                 <p className={`text-sm font-semibold ${lightMode ? "text-white/20" : "text-white/80"}`}>
                   {title} — Ep {currentEp}
                 </p>
@@ -184,8 +184,8 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
                   disabled={currentEp <= 1}
                   onMouseEnter={() => { arrowsHovered.current = true; setShowExpandedControls(true); if (idleTimer.current) clearTimeout(idleTimer.current); }}
                   onMouseLeave={() => { arrowsHovered.current = false; idleTimer.current = setTimeout(() => setShowExpandedControls(false), 1000); }}
-                  className={`absolute top-1/2 -translate-y-1/2 -left-14 w-10 h-10 inline-flex items-center justify-center rounded-full border transition-all disabled:opacity-30 disabled:cursor-not-allowed ${lightMode ? "bg-white/5 border-white/8 text-white/20" : "bg-[#1a1a2e] border-white/10 text-slate-400 hover:bg-white/8 hover:border-white/20 hover:text-slate-200"}`}
-                  style={{ zIndex: 10000, opacity: showExpandedControls ? 1 : 0, transition: "opacity 0.4s ease" }}
+                  className={`absolute top-1/2 -translate-y-1/2 -left-14 w-10 h-10 inline-flex items-center justify-center rounded-full border transition-all disabled:opacity-30 disabled:cursor-not-allowed ${lightMode ? "bg-white/10 border-white/15 text-white/40 hover:bg-white/15 hover:border-white/25 hover:text-white/60" : "bg-[#1a1a2e] border-white/8 text-slate-500 hover:text-slate-300 hover:border-white/20"}`}
+                  style={{ zIndex: 10000, opacity: showExpandedControls ? 1 : 0, transition: "opacity 0.4s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease" }}
                 >
                   <ChevronLeft size={20} />
                 </button>
@@ -194,8 +194,8 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
                   disabled={currentEp >= totalEpisodes}
                   onMouseEnter={() => { arrowsHovered.current = true; setShowExpandedControls(true); if (idleTimer.current) clearTimeout(idleTimer.current); }}
                   onMouseLeave={() => { arrowsHovered.current = false; idleTimer.current = setTimeout(() => setShowExpandedControls(false), 1000); }}
-                  className={`absolute top-1/2 -translate-y-1/2 -right-14 w-10 h-10 inline-flex items-center justify-center rounded-full border transition-all disabled:opacity-30 disabled:cursor-not-allowed ${lightMode ? "bg-white/5 border-white/8 text-white/20" : "bg-[#1a1a2e] border-white/10 text-slate-400 hover:bg-white/8 hover:border-white/20 hover:text-slate-200"}`}
-                  style={{ zIndex: 10000, opacity: showExpandedControls ? 1 : 0, transition: "opacity 0.4s ease" }}
+                  className={`absolute top-1/2 -translate-y-1/2 -right-14 w-10 h-10 inline-flex items-center justify-center rounded-full border transition-all disabled:opacity-30 disabled:cursor-not-allowed ${lightMode ? "bg-white/10 border-white/15 text-white/40 hover:bg-white/15 hover:border-white/25 hover:text-white/60" : "bg-[#1a1a2e] border-white/8 text-slate-500 hover:text-slate-300 hover:border-white/20"}`}
+                  style={{ zIndex: 10000, opacity: showExpandedControls ? 1 : 0, transition: "opacity 0.4s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease" }}
                 >
                   <ChevronRight size={20} />
                 </button>
@@ -227,7 +227,7 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
             <button
               onClick={goPrev}
               disabled={currentEp <= 1}
-              className={`flex items-center gap-1 px-3 py-1.5 border rounded-lg transition-all text-sm font-medium disabled:opacity-30 disabled:cursor-not-allowed shrink-0 ${lightMode ? "bg-white/5 border-white/8 text-white/20" : "bg-[#1a1a2e] border-white/10 text-slate-300 hover:bg-violet-600/20 hover:border-violet-500/30 hover:text-white"}`}
+              className={`flex items-center gap-1 px-3 py-1.5 border rounded-lg transition-all text-sm font-medium disabled:opacity-30 disabled:cursor-not-allowed shrink-0 ${lightMode ? "bg-white/10 border-white/15 text-white/40 hover:bg-white/15 hover:border-white/25 hover:text-white/60" : "bg-[#1a1a2e] border-white/8 text-slate-500 hover:text-slate-300 hover:border-white/20"}`}
             >
               <ChevronLeft size={15} /> Prev
             </button>
@@ -240,7 +240,7 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
             <button
               onClick={goNext}
               disabled={currentEp >= totalEpisodes}
-              className={`flex items-center gap-1 px-3 py-1.5 border rounded-lg transition-all text-sm font-medium disabled:opacity-30 disabled:cursor-not-allowed shrink-0 ${lightMode ? "bg-white/5 border-white/8 text-white/20" : "bg-[#1a1a2e] border-white/10 text-slate-300 hover:bg-violet-600/20 hover:border-violet-500/30 hover:text-white"}`}
+              className={`flex items-center gap-1 px-3 py-1.5 border rounded-lg transition-all text-sm font-medium disabled:opacity-30 disabled:cursor-not-allowed shrink-0 ${lightMode ? "bg-white/10 border-white/15 text-white/40 hover:bg-white/15 hover:border-white/25 hover:text-white/60" : "bg-[#1a1a2e] border-white/8 text-slate-500 hover:text-slate-300 hover:border-white/20"}`}
             >
               Next <ChevronRight size={15} />
             </button>
