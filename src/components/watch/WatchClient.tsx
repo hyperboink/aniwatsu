@@ -122,15 +122,16 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
           )}
 
           {/* Reload — top right above video */}
-          {!expanded && <div className="flex justify-between mb-4 relative" style={{ zIndex: lightMode ? 9999 : undefined }}>
+          {!expanded && <div className="flex justify-between mb-4 relative" style={{ position: "relative", zIndex: lightMode ? 999 : undefined }}>
             {/* Back breadcrumb */}
-            <Link
+            {!lightMode && <Link
               href={`/anime/${anime.mal_id}`}
               className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors"
             >
               <ChevronLeft size={15} />
               {title}
-            </Link>
+            </Link>}
+            {lightMode && <div />}
             <button
               disabled={reloading}
               onClick={() => {
@@ -223,7 +224,7 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
           </div>{/* end watch-player-area */}
 
           {/* Prev / title / Next */}
-          <div className="flex items-center gap-3 mt-3 mb-4">
+          <div className="flex items-center gap-3 mt-3 mb-4" style={{ position: "relative", zIndex: lightMode ? 999 : undefined }}>
             <button
               onClick={goPrev}
               disabled={currentEp <= 1}
@@ -233,7 +234,7 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
             </button>
 
             <div className="flex-1 min-w-0 text-center">
-              <p className="text-white font-bold text-sm md:text-base truncate">{title} - Episode {currentEp}</p>
+              <p className={`font-bold text-sm md:text-base truncate ${lightMode ? "text-white/30" : "text-white"}`}>{title} - Episode {currentEp}</p>
               {/* <p className="text-violet-400 text-xs mt-0.5">Episode {currentEp}{totalEpisodes > 1 ? ` of ${totalEpisodes}` : ""}</p> */}
             </div>
 
