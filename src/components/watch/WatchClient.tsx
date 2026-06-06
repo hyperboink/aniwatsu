@@ -105,8 +105,9 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
       {/* Light-mode dim overlay — real DOM element so pointer-events works on iOS */}
       {lightMode && (
         <div
-          className="fixed inset-0 bg-black/[0.93] pointer-events-none"
+          className="fixed inset-0 bg-black/[0.93] cursor-pointer"
           style={{ zIndex: 998 }}
+          onClick={() => setLightMode(false)}
         />
       )}
 
@@ -248,7 +249,7 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
           </div>
 
           {/* Anime info strip */}
-          <div className="bg-[#13131f] rounded-xl border border-white/5 p-4 flex gap-4 items-start">
+          <div className={`bg-[#13131f] rounded-xl border border-white/5 p-4 flex gap-4 items-start ${lightMode ? "pointer-events-none" : ""}`}>
             {anime.images?.jpg?.image_url && (
               <div className="relative w-14 h-20 shrink-0 rounded-lg overflow-hidden border border-white/10">
                 <Image
@@ -299,7 +300,7 @@ export default function WatchClient({ anime, totalEpisodes, startEpisode, animeK
         </div>
 
         {/* ── Right: episode list ── */}
-        <div className="xl:w-72 shrink-0">
+        <div className={`xl:w-72 shrink-0 ${lightMode ? "pointer-events-none" : ""}`}>
           <div
             className="xl:sticky xl:top-20 flex flex-col bg-[#13131f] rounded-xl border border-white/5 overflow-hidden"
             style={{ maxHeight: "min(640px, 80vh)" }}
