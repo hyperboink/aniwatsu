@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useImperativeHandle, forwardRef } from "react";
 import { usePersist } from "@/hooks/usePersist";
-import { Server, Play, Sun, Maximize2 } from "lucide-react";
+import { Server, Play, Sun, Maximize2, RefreshCw } from "lucide-react";
 import Image from "next/image";
 
 type Props = {
@@ -17,6 +17,7 @@ type Props = {
   onLightToggle?: () => void;
   onExpand?: () => void;
   onFetching?: (fetching: boolean) => void;
+  onReload?: () => void;
 };
 
 export type EmbedPlayerHandle = { reload: () => void };
@@ -25,7 +26,7 @@ type Server_ = { label: string; url: string };
 
 const storageKey = (malId: number, ep: number) => `watch_${malId}_ep${ep}`;
 
-const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ malId, animeKaiBaseUrl, episode, title, titleEn, posterUrl, lightMode, expanded, onLightToggle, onExpand, onFetching }: Props, ref) {
+const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ malId, animeKaiBaseUrl, episode, title, titleEn, posterUrl, lightMode, expanded, onLightToggle, onExpand, onFetching, onReload }: Props, ref) {
   const [activeIdx, setActiveIdx] = useState(0);
   const [servers, setServers] = useState<Server_[]>([]);
   const [fetching, setFetching] = useState(false);
@@ -210,6 +211,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
       {/* Player */}
       <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden">
 
+
         {/* Not available */}
         {noServers && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0d0d14] gap-5 p-6 text-center z-10">
@@ -268,7 +270,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
             ref={iframeRef}
             key={`${playerKey}-${activeIdx}`}
             src={buildSrc(activeUrl)}
-            className="w-full h-full"
+            className="w-full h-full bg-[#070707]"
             allowFullScreen
             allow="autoplay; fullscreen; picture-in-picture; encrypted-media; web-share"
             referrerPolicy="no-referrer-when-downgrade"
@@ -286,7 +288,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
       {/* Unified toolbar: servers left, controls right */}
       <div className="flex items-center gap-2 mt-4 mb-1 flex-wrap">
         {/* Sub / Dub toggle — only show Dub if available */}
-        <div className="flex items-center bg-[#1a1a2e] border border-white/10 rounded-lg overflow-hidden mr-1">
+        <div className={`flex items-center rounded-lg overflow-hidden mr-1 border ${lightMode ? "bg-white/5 border-white/8" : "bg-[#1a1a2e] border-white/10"}`}>
           {(["Sub", "Dub"] as string[]).map((opt) => {
             const active = opt === "Dub" ? isDub : !isDub;
             return (
@@ -295,9 +297,13 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
                 onClick={() => switchAudio(opt === "Dub")}
                 disabled={active}
                 className={`px-3 py-1 text-xs font-semibold transition-all ${
-                  active
-                    ? "bg-violet-600 text-white cursor-default"
-                    : "text-slate-500 hover:text-slate-300 cursor-pointer"
+                  lightMode
+                    ? active
+                      ? "bg-white/10 text-white/40 cursor-default"
+                      : "text-white/20 cursor-pointer"
+                    : active
+                      ? "bg-violet-600 text-white cursor-default"
+                      : "text-slate-500 hover:text-slate-300 cursor-pointer"
                 }`}
               >
                 {opt}
@@ -355,7 +361,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
                   : "bg-[#1a1a2e] text-slate-500 border-white/8 hover:text-slate-300 hover:border-white/20"
               }`}
             >
-              <Maximize2 size={13} /> {expanded ? "Collapse" : "Expand"}
+              <Maximize2 size={13} /> {expanded ? "Exit expand" : "Expand"}
             </button>
           )}
         </div>

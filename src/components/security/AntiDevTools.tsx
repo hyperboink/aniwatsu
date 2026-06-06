@@ -85,22 +85,17 @@ export default function AntiDevTools() {
       if ((e.ctrlKey || e.metaKey) && key === "u") { e.preventDefault(); return; }
     };
 
-    // Disable right-click 
-    const onContextMenu = (e: MouseEvent) => e.preventDefault();
-
     // Disable text selection
     document.documentElement.style.userSelect = "none";
     (document.documentElement.style as CSSStyleDeclaration & { webkitUserSelect: string }).webkitUserSelect = "none";
 
     window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("contextmenu", onContextMenu);
 
     return () => {
       cancelAnimationFrame(rafId);
       clearInterval(interval);
       clearInterval(clearConsole);
       window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("contextmenu", onContextMenu);
       document.documentElement.style.userSelect = "";
     };
   }, []);
