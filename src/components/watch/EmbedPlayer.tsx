@@ -270,7 +270,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
             ref={iframeRef}
             key={`${playerKey}-${activeIdx}`}
             src={buildSrc(activeUrl)}
-            className="w-full h-full"
+            className="w-full h-full bg-[#070707]"
             allowFullScreen
             allow="autoplay; fullscreen; picture-in-picture; encrypted-media; web-share"
             referrerPolicy="no-referrer-when-downgrade"
@@ -288,7 +288,7 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
       {/* Unified toolbar: servers left, controls right */}
       <div className="flex items-center gap-2 mt-4 mb-1 flex-wrap">
         {/* Sub / Dub toggle — only show Dub if available */}
-        <div className="flex items-center bg-[#1a1a2e] border border-white/10 rounded-lg overflow-hidden mr-1">
+        <div className={`flex items-center rounded-lg overflow-hidden mr-1 border ${lightMode ? "bg-white/5 border-white/8" : "bg-[#1a1a2e] border-white/10"}`}>
           {(["Sub", "Dub"] as string[]).map((opt) => {
             const active = opt === "Dub" ? isDub : !isDub;
             return (
@@ -297,9 +297,13 @@ const EmbedPlayer = forwardRef<EmbedPlayerHandle, Props>(function EmbedPlayer({ 
                 onClick={() => switchAudio(opt === "Dub")}
                 disabled={active}
                 className={`px-3 py-1 text-xs font-semibold transition-all ${
-                  active
-                    ? "bg-violet-600 text-white cursor-default"
-                    : "text-slate-500 hover:text-slate-300 cursor-pointer"
+                  lightMode
+                    ? active
+                      ? "bg-white/10 text-white/40 cursor-default"
+                      : "text-white/20 cursor-pointer"
+                    : active
+                      ? "bg-violet-600 text-white cursor-default"
+                      : "text-slate-500 hover:text-slate-300 cursor-pointer"
                 }`}
               >
                 {opt}
